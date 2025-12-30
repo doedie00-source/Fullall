@@ -75,8 +75,6 @@ local THEME = {
     -- Accent Colors
     StarColor = Color3.fromRGB(255, 215, 0),
     AccentBlue = Color3.fromRGB(0, 140, 255),
-    AccentCyan = Color3.fromRGB(0, 200, 255),    
-    AccentGreen = Color3.fromRGB(0, 220, 140),
 }
 
 local DUPE_RECIPES = {
