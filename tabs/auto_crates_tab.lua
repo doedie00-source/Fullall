@@ -48,7 +48,7 @@ function AutoCratesTab.new(deps)
     
     self.FloatingButtons = {}
     
-    self.AutoDeleteEnabled = false
+    self.AutoDeleteEnabled = true
     self.TrashNamesList = {}
     
     return self
@@ -65,20 +65,21 @@ function AutoCratesTab:Init(parent)
     
     self.UIFactory.CreateLabel({
         Parent = header,
-        Text = "AUTO OPEN CRATES",
-        Size = UDim2.new(1, -8, 0, 24),
+        Text = "  AUTO OPEN CRATES", -- เพิ่มเว้นวรรค 2 ที
+        Size = UDim2.new(1, -8, 0, 28), -- ปรับความสูงเป็น 28
         Position = UDim2.new(0, 8, 0, 0),
         TextColor = THEME.TextWhite,
-        TextSize = 15,
-        Font = Enum.Font.GothamBold,
+        TextSize = 14, -- ปรับขนาดเป็น 14
+        Font = Enum.Font.GothamBold, -- ใช้ GothamBold (หนาปกติ)
         TextXAlign = Enum.TextXAlignment.Left
     })
     
+    -- ปรับตำแหน่ง SubHeader นิดหน่อยเพื่อให้รับกับ Header ใหม่
     self.UIFactory.CreateLabel({
         Parent = header,
         Text = "Select crates and open them automatically (1-8 per batch)",
         Size = UDim2.new(1, -8, 0, 16),
-        Position = UDim2.new(0, 8, 0, 24),
+        Position = UDim2.new(0, 8, 0, 28), -- ขยับลงมาที่ Y: 28
         TextColor = THEME.TextDim,
         TextSize = 10,
         Font = Enum.Font.Gotham,
@@ -182,10 +183,7 @@ function AutoCratesTab:CreateFloatingButtons(parent)
         OnClick = function() self:ToggleSelectAll() end
     })
     self.SelectAllBtn.ZIndex = 101
-    -- เริ่มต้นเป็น Blue (เชิญชวนให้กด Select)
     self.SelectAllBtnStroke = self.UIFactory.AddStroke(self.SelectAllBtn, THEME.AccentBlue, 1.5, 0.4)
-    
-    -- 2. Auto Open Button
     self.AutoOpenBtn = self.UIFactory.CreateButton({
         Size = UDim2.new(0, btnWidth + 10, 0, btnHeight),
         Position = UDim2.new(1, startX - btnWidth*2 - spacing - 10, 1, -38),
@@ -198,24 +196,24 @@ function AutoCratesTab:CreateFloatingButtons(parent)
         OnClick = function() self:ToggleAutoOpen() end
     })
     self.AutoOpenBtn.ZIndex = 101
-    -- เริ่มต้นเป็น Blue (Start)
+
     self.AutoOpenBtnStroke = self.UIFactory.AddStroke(self.AutoOpenBtn, THEME.AccentBlue, 1.5, 0.4)
     
     -- 3. Auto Delete Button
     self.AutoDeleteBtn = self.UIFactory.CreateButton({
         Size = UDim2.new(0, btnWidth + 20, 0, btnHeight),
         Position = UDim2.new(1, startX - btnWidth*3 - spacing*2 - 30, 1, -38),
-        Text = "AUTO DELETE: OFF",
+        Text = "AUTO DELETE: ON", 
+        
         BgColor = THEME.CardBg,
-        TextColor = THEME.TextWhite, -- Text สีขาวเสมอ
+        TextColor = THEME.TextWhite,
         TextSize = 11,
         Font = Enum.Font.GothamBold,
         Parent = parent,
         OnClick = function() self:ToggleAutoDelete() end
     })
     self.AutoDeleteBtn.ZIndex = 101
-    -- เริ่มต้นเป็น Red (เพราะสถานะคือ OFF)
-    self.AutoDeleteBtnStroke = self.UIFactory.AddStroke(self.AutoDeleteBtn, THEME.Fail, 1.5, 0.4)
+    self.AutoDeleteBtnStroke = self.UIFactory.AddStroke(self.AutoDeleteBtn, THEME.AccentBlue, 1.5, 0.4)
 end
 
 function AutoCratesTab:BuildTrashDatabase()
@@ -288,18 +286,17 @@ function AutoCratesTab:ToggleAutoDelete()
     
     self.AutoDeleteEnabled = not self.AutoDeleteEnabled
     local THEME = self.Config.THEME
-    
-    -- [[ UPDATED ]] Text สีขาวเสมอ
+
     self.AutoDeleteBtn.TextColor3 = THEME.TextWhite 
     
     if self.AutoDeleteEnabled then
         self.AutoDeleteBtn.Text = "AUTO DELETE: ON"
         self.AutoDeleteBtnStroke.Color = THEME.AccentBlue -- ON = Blue
-        -- เอา SetStatus ออก เพื่อไม่ให้ล้นจอ
+
     else
         self.AutoDeleteBtn.Text = "AUTO DELETE: OFF"
         self.AutoDeleteBtnStroke.Color = THEME.Fail -- OFF = Red
-        -- เอา SetStatus ออก เพื่อไม่ให้ล้นจอ
+
     end
 end
 
@@ -717,15 +714,12 @@ function AutoCratesTab:StartAutoOpen()
         self.AutoOpenBtnStroke.Color = THEME.Fail
         self.AutoOpenBtnStroke.Transparency = 0.4
     end
-    
-    -- [[ เพิ่มตรงนี้ ]] ล้างข้อความมุมขวาล่างออก เพื่อความสะอาด
     if self.InfoLabel then
         self.InfoLabel.Text = "" 
     end
     
     if self.LockOverlay then
         self.LockOverlay.Visible = true
-        -- ข้อความเริ่มต้น
         if self.LockLabel then
              self.LockLabel.Text = "[STARTING]\nPreparing to open..."
              self.LockLabel.TextColor3 = THEME.TextWhite
