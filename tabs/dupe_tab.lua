@@ -149,7 +149,7 @@ function DupeTab:CreateFloatingButtons(parent)
     self.FloatingButtons.BtnDeletePet = self.UIFactory.CreateButton({
         Size = UDim2.new(0, btnWidth, 0, btnHeight),
         Position = UDim2.new(1, startX - btnWidth*3 - spacing*2 - 15, 1, -38),
-        Text = "🗑️ DELETE",
+        Text = "DELETE",
         BgColor = THEME.CardBg, -- ✅ ใช้พื้นหลังสี Card
         TextSize = 12,
         Font = Enum.Font.GothamBold,
@@ -159,7 +159,7 @@ function DupeTab:CreateFloatingButtons(parent)
     self.FloatingButtons.BtnDeletePet.ZIndex = 101
     self.FloatingButtons.BtnDeletePet.Visible = false
 
-    self.UIFactory.AddStroke(self.FloatingButtons.BtnDeletePet, THEME.Fail, 1.5, 0.4)
+    self.UIFactory.AddStroke(self.FloatingButtons.BtnDeletePet, THEME.AccentBlue, 1.5, 0.4)
     
     -- 4. ปุ่ม ADD ALL (สไตล์สีเขียวแบบ Card)
     self.FloatingButtons.BtnAddAll1k = self.UIFactory.CreateButton({
@@ -1048,7 +1048,7 @@ function DupeTab:UpdateEvoButtonState()
     
     self.FloatingButtons.BtnEvoPet.Text = btnText
     
-    -- ✅✅✅ ปรับ Logic สีตรงนี้ใหม่ ให้เปลี่ยนแค่ Stroke/Text ไม่เปลี่ยนพื้นหลัง
+
     if isValid then
         -- กรณีใช้งานได้: พื้นหลัง Card, ตัวหนังสือขาวสว่าง, ขอบสีม่วงชัด
         self.FloatingButtons.BtnEvoPet.BackgroundColor3 = THEME.CardBg 
@@ -1057,7 +1057,7 @@ function DupeTab:UpdateEvoButtonState()
         self.FloatingButtons.BtnEvoPet.TextColor3 = THEME.TextWhite
         
         if self.FloatingButtons.BtnEvoPet:FindFirstChild("UIStroke") then
-            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.AccentPurple
+            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.AccentBlue
             self.FloatingButtons.BtnEvoPet.UIStroke.Thickness = 1.5
             self.FloatingButtons.BtnEvoPet.UIStroke.Transparency = 0.4
         end
