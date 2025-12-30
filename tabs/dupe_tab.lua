@@ -59,7 +59,7 @@ function DupeTab:Init(parent)
     
     local title = self.UIFactory.CreateLabel({
         Parent = header,
-        Text = "DUPE SYSTEM",
+        Text = "  DUPE SYSTEM",
         Size = UDim2.new(1, -8, 0, 26),
         Position = UDim2.new(0, 8, 0, 0),
         TextColor = THEME.TextWhite,
@@ -120,6 +120,8 @@ function DupeTab:CreateFloatingButtons(parent)
         Position = UDim2.new(1, startX - btnWidth, 1, -38),
         Text = "DUPE",
         BgColor = THEME.CardBg, -- ✅ ใช้พื้นหลังสี Card
+
+        TextColor = THEME.TextWhite,
         TextSize = 12,          -- ✅ ขนาด 12 ตัวหนา
         Font = Enum.Font.GothamBold,
         Parent = parent,
@@ -135,6 +137,7 @@ function DupeTab:CreateFloatingButtons(parent)
         Position = UDim2.new(1, startX - btnWidth*2 - spacing - 15, 1, -38),
         Text = "EVOLVE",
         BgColor = THEME.CardBg, -- ✅ ใช้พื้นหลังสี Card
+        TextColor = THEME.TextWhite,
         TextSize = 12,
         Font = Enum.Font.GothamBold,
         Parent = parent,
@@ -151,6 +154,7 @@ function DupeTab:CreateFloatingButtons(parent)
         Position = UDim2.new(1, startX - btnWidth*3 - spacing*2 - 15, 1, -38),
         Text = "DELETE",
         BgColor = THEME.CardBg, -- ✅ ใช้พื้นหลังสี Card
+        TextColor = THEME.TextWhite,
         TextSize = 12,
         Font = Enum.Font.GothamBold,
         Parent = parent,
@@ -159,13 +163,14 @@ function DupeTab:CreateFloatingButtons(parent)
     self.FloatingButtons.BtnDeletePet.ZIndex = 101
     self.FloatingButtons.BtnDeletePet.Visible = false
 
-    self.UIFactory.AddStroke(self.FloatingButtons.BtnDeletePet, THEME.AccentBlue, 1.5, 0.4)
+    self.UIFactory.AddStroke(self.FloatingButtons.BtnDeletePet, THEME.Fail, 1.5, 0.4)
     
     self.FloatingButtons.BtnAddAll1k = self.UIFactory.CreateButton({
         Size = UDim2.new(0, 140, 0, btnHeight),
         Position = UDim2.new(1, -148, 1, -38),
         Text = "ADD ALL",
         BgColor = THEME.CardBg, -- ✅ ใช้พื้นหลังสี Card
+        TextColor = THEME.TextWhite,
         TextSize = 12,
         Font = Enum.Font.GothamBold,
         Parent = parent
