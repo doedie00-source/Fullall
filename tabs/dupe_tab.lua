@@ -496,7 +496,7 @@ function DupeTab:CreateCrateCard(crate, inventoryCrates)
     
     local Card = Instance.new("Frame", self.Container)
     Card.Name = crate.DisplayName
-    Card.BackgroundColor3 = THEME.CardBg  // ✅ ใช้สีเดียวกันหมดเลย
+    Card.BackgroundColor3 = THEME.CardBg
     Card.BackgroundTransparency = 0.2
     Card.BorderSizePixel = 0
     
