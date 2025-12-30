@@ -232,7 +232,7 @@ function DupeTab:SwitchSubTab(name)
     -- Update Info Label
     if self.InfoLabel then
         if name == "Items" then
-            self.InfoLabel.Text = ""LIMITS: Scrolls ~150 | Tickets ~10K | Potions ~2K"
+            self.InfoLabel.Text = "LIMITS: Scrolls ~150 | Tickets ~10K | Potions ~2K"
         else
             self.InfoLabel.Text = ""
         end
@@ -261,7 +261,7 @@ end
 
 function DupeTab:UpdateStatusWarning()
     if self.CurrentSubTab == "Items" and self.InfoLabel then
-        self.InfoLabel.Text = ""LIMITS: Scrolls ~150 | Tickets ~10K | Potions ~2K"
+        self.InfoLabel.Text = "LIMITS: Scrolls ~150 | Tickets ~10K | Potions ~2K"
     elseif self.InfoLabel then
         self.InfoLabel.Text = ""
     end
@@ -400,17 +400,17 @@ function DupeTab:CreateItemCard(recipe, playerData)
         if self.TradeManager.IsProcessing then return end
         
         if not self.Utils.IsTradeActive() then
-            self.StateManager:SetStatus(""Open Trade Menu first!", THEME.Fail, self.StatusLabel)
+            self.StateManager:SetStatus("Open Trade Menu first!", THEME.Fail, self.StatusLabel)
             return
         end
         
         if isOwned then
-            self.StateManager:SetStatus(""Already Owned (Limit 1)", THEME.Fail, self.StatusLabel)
+            self.StateManager:SetStatus("Already Owned (Limit 1)", THEME.Fail, self.StatusLabel)
             return
         end
         
         if not isReady then
-            self.StateManager:SetStatus(string.format(""Missing Ingredients (%d/%d)", foundCount, totalNeeded), THEME.Warning, self.StatusLabel)
+            self.StateManager:SetStatus(string.format("Missing Ingredients (%d/%d)", foundCount, totalNeeded), THEME.Warning, self.StatusLabel)
             return
         end
         
@@ -562,12 +562,12 @@ function DupeTab:OnCrateCardClick(crate, isOwnedInSystem)
     local THEME = self.Config.THEME
     
     if not self.Utils.IsTradeActive() then
-        self.StateManager:SetStatus(""Open Trade Menu first!", THEME.Fail, self.StatusLabel)
+        self.StateManager:SetStatus("Open Trade Menu first!", THEME.Fail, self.StatusLabel)
         return
     end
     
     if isOwnedInSystem then
-        self.StateManager:SetStatus(""Locked: You already own this crate", THEME.Fail, self.StatusLabel)
+        self.StateManager:SetStatus("Locked: You already own this crate", THEME.Fail, self.StatusLabel)
         return
     end
     
@@ -600,7 +600,7 @@ function DupeTab:OnAddAllCrates(cratesList, inventoryCrates, quantity)
     local THEME = self.Config.THEME
     
     if not self.Utils.IsTradeActive() then
-        self.StateManager:SetStatus(""Open Trade Menu first!", THEME.Fail, self.StatusLabel)
+        self.StateManager:SetStatus("Open Trade Menu first!", THEME.Fail, self.StatusLabel)
         return
     end
     
@@ -608,7 +608,7 @@ function DupeTab:OnAddAllCrates(cratesList, inventoryCrates, quantity)
         self.FloatingButtons.BtnAddAll1k.Active = false
         self.FloatingButtons.BtnAddAll1k.Text = "ADDING..."
     end
-    self.StateManager:SetStatus(""Adding missing crates (" .. quantity .. ")...", THEME.AccentBlue, self.StatusLabel)
+    self.StateManager:SetStatus("Adding missing crates (" .. quantity .. ")...", THEME.AccentBlue, self.StatusLabel)
 
     
     task.spawn(function()
@@ -641,7 +641,7 @@ function DupeTab:OnAddAllCrates(cratesList, inventoryCrates, quantity)
         end
         
         if addedCount > 0 then
-            self.StateManager:SetStatus(""Added " .. addedCount .. " new types!", THEME.Success, self.StatusLabel)
+            self.StateManager:SetStatus("Added " .. addedCount .. " new types!", THEME.Success, self.StatusLabel)
         else
             self.StateManager:SetStatus("✨ Nothing new to add", THEME.TextGray, self.StatusLabel)
         end
@@ -926,7 +926,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
             local originalText = shortID
             UUIDDisplay.Text = "COPIED!"
             UUIDDisplay.TextColor3 = THEME.Success
-            self.StateManager:SetStatus(""Copied UUID to clipboard!", THEME.Success, self.StatusLabel)
+            self.StateManager:SetStatus("Copied UUID to clipboard!", THEME.Success, self.StatusLabel)
             task.delay(1, function()
                 if UUIDDisplay and UUIDDisplay.Parent then
                     UUIDDisplay.Text = originalText
@@ -934,7 +934,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
                 end
             end)
         else
-            self.StateManager:SetStatus(""Executor doesn't support clipboard", THEME.Warning, self.StatusLabel)
+            self.StateManager:SetStatus("Executor doesn't support clipboard", THEME.Warning, self.StatusLabel)
         end
     end)
     
@@ -962,7 +962,7 @@ function DupeTab:OnDeletePets()
     local THEME = self.Config.THEME
     
     if self.Utils.IsTradeActive() then
-        self.StateManager:SetStatus(""Close Trade first!", THEME.Fail, self.StatusLabel)
+        self.StateManager:SetStatus("Close Trade first!", THEME.Fail, self.StatusLabel)
         return
     end
     
@@ -1035,13 +1035,13 @@ function DupeTab:UpdateEvoButtonState()
         end
         
         if not allSameName then
-            btnText = ""NAME MISMATCH"
+            btnText = "NAME MISMATCH"
         elseif not allSameEvo then
-            btnText = ""EVO MISMATCH"
+            btnText = "EVO MISMATCH"
         elseif not notMaxLevel then
-            btnText = ""MAX LEVEL"
+            btnText = "MAX LEVEL"
         else
-            btnText = ""EVOLVE NOW"
+            btnText = "EVOLVE NOW"
             isValid = true
         end
     end
