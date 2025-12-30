@@ -1,5 +1,5 @@
 -- tabs/auto_crates_tab.lua
--- Auto Open Crates Tab + Auto Delete Accessories
+-- Auto Open Crates Tab + Auto Delete Accessories (Clean Professional)
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,11 +16,11 @@ if not SuccessLoadCrates then CratesInfo = {} end
 local AutoCratesTab = {}
 AutoCratesTab.__index = AutoCratesTab
 
--- ⚙️ Auto Delete Configuration
+-- Auto Delete Configuration
 local AUTO_DELETE_CONFIG = {
     MAX_ACCESSORIES = 200,
-    SAFE_THRESHOLD = 16,  -- ลบเมื่อเหลือช่องว่าง <= 16
-    BATCH_SIZE = 8,       -- เปิดทีละ 8 กล่อง
+    SAFE_THRESHOLD = 16,
+    BATCH_SIZE = 8,
     EXCEPTION_LIST = {
         ["Tri Ton"] = true,
         ["Meowl Head"] = true,
@@ -46,9 +46,10 @@ function AutoCratesTab.new(deps)
     self.ShouldStop = false
     self.LockOverlay = nil
     
-    -- ✅ Auto Delete State
+    self.FloatingButtons = {}
+    
     self.AutoDeleteEnabled = false
-    self.TrashNamesList = {}  -- รายชื่อ Accessories ที่เป็นขยะ (Item 1-4)
+    self.TrashNamesList = {}
     
     return self
 end
@@ -56,16 +57,15 @@ end
 function AutoCratesTab:Init(parent)
     local THEME = self.Config.THEME
     
-    -- สร้างฐานข้อมูลขยะ
     self:BuildTrashDatabase()
     
     local header = Instance.new("Frame", parent)
-    header.Size = UDim2.new(1, 0, 0, 120)
+    header.Size = UDim2.new(1, 0, 0, 80)
     header.BackgroundTransparency = 1
     
     self.UIFactory.CreateLabel({
         Parent = header,
-        Text = "🎁 Auto Open Crates",
+        Text = "AUTO OPEN CRATES",
         Size = UDim2.new(1, -8, 0, 24),
         Position = UDim2.new(0, 8, 0, 0),
         TextColor = THEME.TextWhite,
@@ -85,79 +85,21 @@ function AutoCratesTab:Init(parent)
         TextXAlign = Enum.TextXAlignment.Left
     })
     
-    -- บรรทัดที่ 1: Select All + Start/Stop
-    local btnContainer1 = Instance.new("Frame", header)
-    btnContainer1.Size = UDim2.new(1, -8, 0, 32)
-    btnContainer1.Position = UDim2.new(0, 8, 0, 42)
-    btnContainer1.BackgroundTransparency = 1
-    
-    local btnLayout1 = Instance.new("UIListLayout", btnContainer1)
-    btnLayout1.FillDirection = Enum.FillDirection.Horizontal
-    btnLayout1.Padding = UDim.new(0, 8)
-    
-    self.SelectAllBtn = self.UIFactory.CreateButton({
-        Parent = btnContainer1,
-        Text = "SELECT ALL",
-        Size = UDim2.new(0, 140, 0, 32),
-        BgColor = THEME.CardBg,
-        TextSize = 12,
-        Font = Enum.Font.GothamBold,
-        CornerRadius = 6
-    })
-    self.SelectAllBtnStroke = self.UIFactory.AddStroke(self.SelectAllBtn, THEME.AccentBlue, 1.5, 0.4)
-
-    self.AutoOpenBtn = self.UIFactory.CreateButton({
-        Parent = btnContainer1,
-        Text = "START OPEN",
-        Size = UDim2.new(0, 160, 0, 32),
-        BgColor = THEME.CardBg,
-        TextSize = 12,
-        Font = Enum.Font.GothamBold,
-        CornerRadius = 6
-    })
-    self.AutoOpenBtnStroke = self.UIFactory.AddStroke(self.AutoOpenBtn, THEME.AccentBlue, 1.5, 0.4)
-
-    -- ✅ บรรทัดที่ 2: Auto Delete Toggle + Status
-    local btnContainer2 = Instance.new("Frame", header)
-    btnContainer2.Size = UDim2.new(1, -8, 0, 32)
-    btnContainer2.Position = UDim2.new(0, 8, 0, 82)
-    btnContainer2.BackgroundTransparency = 1
-    
-    local btnLayout2 = Instance.new("UIListLayout", btnContainer2)
-    btnLayout2.FillDirection = Enum.FillDirection.Horizontal
-    btnLayout2.Padding = UDim.new(0, 8)
-    
-    self.AutoDeleteBtn = self.UIFactory.CreateButton({
-        Parent = btnContainer2,
-        Text = "AUTO DELETE: OFF",
-        Size = UDim2.new(0, 200, 0, 32),
-        BgColor = THEME.CardBg,
-        TextColor = THEME.TextGray,
-        TextSize = 11,
-        Font = Enum.Font.GothamBold,
-        CornerRadius = 6
-    })
-    self.AutoDeleteBtnStroke = self.UIFactory.AddStroke(self.AutoDeleteBtn, THEME.GlassStroke, 1.5, 0.5)
-    
-    -- Status Label สำหรับแสดงจำนวน Accessories
     self.AccessoryStatusLabel = self.UIFactory.CreateLabel({
-        Parent = btnContainer2,
-        Text = "Loading...",
-        Size = UDim2.new(0, 240, 0, 32),
+        Parent = header,
+        Text = "Loading inventory...",
+        Size = UDim2.new(1, -8, 0, 20),
+        Position = UDim2.new(0, 8, 0, 48),
         TextColor = THEME.TextDim,
         TextSize = 11,
         Font = Enum.Font.GothamMedium,
         TextXAlign = Enum.TextXAlignment.Left
     })
-
-    self.SelectAllBtn.MouseButton1Click:Connect(function() self:ToggleSelectAll() end)
-    self.AutoOpenBtn.MouseButton1Click:Connect(function() self:ToggleAutoOpen() end)
-    self.AutoDeleteBtn.MouseButton1Click:Connect(function() self:ToggleAutoDelete() end)
     
     self.Container = self.UIFactory.CreateScrollingFrame({
         Parent = parent,
-        Size = UDim2.new(1, 0, 1, -124), -- เพิ่ม offset เพื่อรองรับปุ่มใหม่
-        Position = UDim2.new(0, 0, 0, 122)
+        Size = UDim2.new(1, 0, 1, -84),
+        Position = UDim2.new(0, 0, 0, 82)
     })
     
     self.Container.ScrollBarThickness = 4
@@ -180,6 +122,8 @@ function AutoCratesTab:Init(parent)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     layout.SortOrder = Enum.SortOrder.LayoutOrder
     
+    self:CreateFloatingButtons(parent)
+    
     self:RefreshInventory()
     self:UpdateInfoLabel()
     self:UpdateSelectButton()
@@ -187,8 +131,8 @@ function AutoCratesTab:Init(parent)
     
     self.LockOverlay = Instance.new("Frame", parent)
     self.LockOverlay.Name = "LockOverlay"
-    self.LockOverlay.Size = UDim2.new(1, 0, 1, -124)
-    self.LockOverlay.Position = UDim2.new(0, 0, 0, 122)
+    self.LockOverlay.Size = UDim2.new(1, 0, 1, -84)
+    self.LockOverlay.Position = UDim2.new(0, 0, 0, 82)
     self.LockOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     self.LockOverlay.BackgroundTransparency = 0.6
     self.LockOverlay.BorderSizePixel = 0
@@ -197,7 +141,7 @@ function AutoCratesTab:Init(parent)
     
     local lockLabel = self.UIFactory.CreateLabel({
         Parent = self.LockOverlay,
-        Text = "🔒 Processing...\nCannot select/edit while opening",
+        Text = "[LOCKED]\nProcessing crates...",
         Size = UDim2.new(1, 0, 1, 0),
         Position = UDim2.new(0, 0, 0, 0),
         TextColor = THEME.TextWhite,
@@ -207,7 +151,6 @@ function AutoCratesTab:Init(parent)
     lockLabel.ZIndex = 1001
     lockLabel.TextWrapped = true
     
-    -- ✅ อัพเดท Accessory Status ทุก 2 วินาที
     task.spawn(function()
         while self.Container and self.Container.Parent do
             self:UpdateAccessoryStatus()
@@ -216,7 +159,57 @@ function AutoCratesTab:Init(parent)
     end)
 end
 
--- ✅ สร้างฐานข้อมูลขยะจาก CratesInfo (Item 1-4)
+function AutoCratesTab:CreateFloatingButtons(parent)
+    local THEME = self.Config.THEME
+    
+    local spacing = 6
+    local btnWidth = 110
+    local btnHeight = 32
+    local startX = -8
+    
+    self.SelectAllBtn = self.UIFactory.CreateButton({
+        Size = UDim2.new(0, btnWidth, 0, btnHeight),
+        Position = UDim2.new(1, startX - btnWidth, 1, -38),
+        Text = "SELECT ALL",
+        BgColor = THEME.CardBg,
+        TextColor = THEME.TextWhite,
+        TextSize = 12,
+        Font = Enum.Font.GothamBold,
+        Parent = parent,
+        OnClick = function() self:ToggleSelectAll() end
+    })
+    self.SelectAllBtn.ZIndex = 101
+    self.SelectAllBtnStroke = self.UIFactory.AddStroke(self.SelectAllBtn, THEME.AccentBlue, 1.5, 0.4)
+    
+    self.AutoOpenBtn = self.UIFactory.CreateButton({
+        Size = UDim2.new(0, btnWidth + 10, 0, btnHeight),
+        Position = UDim2.new(1, startX - btnWidth*2 - spacing - 10, 1, -38),
+        Text = "START OPEN",
+        BgColor = THEME.CardBg,
+        TextColor = THEME.TextWhite,
+        TextSize = 12,
+        Font = Enum.Font.GothamBold,
+        Parent = parent,
+        OnClick = function() self:ToggleAutoOpen() end
+    })
+    self.AutoOpenBtn.ZIndex = 101
+    self.AutoOpenBtnStroke = self.UIFactory.AddStroke(self.AutoOpenBtn, THEME.AccentBlue, 1.5, 0.4)
+    
+    self.AutoDeleteBtn = self.UIFactory.CreateButton({
+        Size = UDim2.new(0, btnWidth + 20, 0, btnHeight),
+        Position = UDim2.new(1, startX - btnWidth*3 - spacing*2 - 30, 1, -38),
+        Text = "AUTO DELETE: OFF",
+        BgColor = THEME.CardBg,
+        TextColor = THEME.TextWhite,
+        TextSize = 11,
+        Font = Enum.Font.GothamBold,
+        Parent = parent,
+        OnClick = function() self:ToggleAutoDelete() end
+    })
+    self.AutoDeleteBtn.ZIndex = 101
+    self.AutoDeleteBtnStroke = self.UIFactory.AddStroke(self.AutoDeleteBtn, THEME.Fail, 1.5, 0.4)
+end
+
 function AutoCratesTab:BuildTrashDatabase()
     self.TrashNamesList = {}
     
@@ -224,7 +217,6 @@ function AutoCratesTab:BuildTrashDatabase()
         if crateData.Rewards then
             local r = crateData.Rewards
             
-            -- เก็บเฉพาะ Accessory (1-4)
             if r.ItemOne and r.ItemOne.Name then 
                 self.TrashNamesList[r.ItemOne.Name] = true 
             end
@@ -240,7 +232,6 @@ function AutoCratesTab:BuildTrashDatabase()
         end
     end
     
-    -- ลบของยกเว้นออกจากรายการ
     for name, _ in pairs(AUTO_DELETE_CONFIG.EXCEPTION_LIST) do
         if self.TrashNamesList[name] then
             self.TrashNamesList[name] = nil
@@ -248,7 +239,6 @@ function AutoCratesTab:BuildTrashDatabase()
     end
 end
 
--- ✅ ตรวจสอบจำนวน Accessories และคำนวณช่องว่าง
 function AutoCratesTab:GetAccessorySpace()
     local replica = ReplicaListener:GetReplica()
     if not replica or not replica.Data then return 0, 0 end
@@ -261,7 +251,6 @@ function AutoCratesTab:GetAccessorySpace()
     return count, space
 end
 
--- ✅ อัพเดทสถานะ Accessories
 function AutoCratesTab:UpdateAccessoryStatus()
     if not self.AccessoryStatusLabel then return end
     
@@ -274,11 +263,11 @@ function AutoCratesTab:UpdateAccessoryStatus()
     elseif space <= 50 then
         color = THEME.Warning
     else
-        color = THEME.AccentBlue
+        color = THEME.TextGray
     end
     
     self.AccessoryStatusLabel.Text = string.format(
-        "📦 Accessories: %d/%d (Space: %d)",
+        "Accessories: %d/%d | Space: %d",
         count,
         AUTO_DELETE_CONFIG.MAX_ACCESSORIES,
         space
@@ -286,7 +275,6 @@ function AutoCratesTab:UpdateAccessoryStatus()
     self.AccessoryStatusLabel.TextColor3 = color
 end
 
--- ✅ Toggle Auto Delete
 function AutoCratesTab:ToggleAutoDelete()
     if self.IsProcessing then return end
     
@@ -294,19 +282,20 @@ function AutoCratesTab:ToggleAutoDelete()
     local THEME = self.Config.THEME
     
     if self.AutoDeleteEnabled then
-        self.AutoDeleteBtn.Text = "🗑️ AUTO DELETE: ON"
-        self.AutoDeleteBtn.TextColor3 = THEME.AccentBlue
+        self.AutoDeleteBtn.Text = "AUTO DELETE: ON"
+        self.AutoDeleteBtn.TextColor3 = THEME.TextWhite
         self.AutoDeleteBtnStroke.Color = THEME.AccentBlue
-        self.StateManager:SetStatus("✅ Auto Delete Enabled", THEME.Success, self.StatusLabel)
+        self.AutoDeleteBtnStroke.Transparency = 0.4
+        self.StateManager:SetStatus("[ON] Auto Delete Enabled", THEME.Success, self.StatusLabel)
     else
-        self.AutoDeleteBtn.Text = "🗑️ AUTO DELETE: OFF"
-        self.AutoDeleteBtn.TextColor3 = THEME.TextGray
-        self.AutoDeleteBtnStroke.Color = THEME.GlassStroke
-        self.StateManager:SetStatus("⚪ Auto Delete Disabled", THEME.TextGray, self.StatusLabel)
+        self.AutoDeleteBtn.Text = "AUTO DELETE: OFF"
+        self.AutoDeleteBtn.TextColor3 = THEME.TextWhite
+        self.AutoDeleteBtnStroke.Color = THEME.Fail
+        self.AutoDeleteBtnStroke.Transparency = 0.4
+        self.StateManager:SetStatus("[OFF] Auto Delete Disabled", THEME.TextGray, self.StatusLabel)
     end
 end
 
--- ✅ ฟังก์ชันลบ Accessories ขยะ
 function AutoCratesTab:AutoDeleteAccessories()
     local replica = ReplicaListener:GetReplica()
     if not replica or not replica.Data then return false end
@@ -327,12 +316,6 @@ function AutoCratesTab:AutoDeleteAccessories()
         local n = item.Name
         local shouldDelete = false
         
-        -- เงื่อนไข:
-        -- 1. อยู่ในรายการขยะ (Item 1-4)
-        -- 2. ไม่ใช่ของยกเว้น
-        -- 3. ไม่ได้ใส่อยู่
-        -- 4. ไม่มี Scroll
-        
         if self.TrashNamesList[n] 
             and not AUTO_DELETE_CONFIG.EXCEPTION_LIST[n] 
             and not equippedSet[uuid] 
@@ -349,7 +332,7 @@ function AutoCratesTab:AutoDeleteAccessories()
     
     local THEME = self.Config.THEME
     self.StateManager:SetStatus(
-        string.format("🗑️ Deleting %d trash accessories...", #toDeleteList),
+        string.format("[DELETING] %d accessories...", #toDeleteList),
         THEME.Warning,
         self.StatusLabel
     )
@@ -360,14 +343,14 @@ function AutoCratesTab:AutoDeleteAccessories()
     
     if success then
         self.StateManager:SetStatus(
-            string.format("✅ Deleted %d accessories!", #toDeleteList),
+            string.format("[DELETED] %d accessories", #toDeleteList),
             THEME.Success,
             self.StatusLabel
         )
         return true
     else
         self.StateManager:SetStatus(
-            "❌ Delete failed: " .. tostring(err),
+            "[ERROR] Delete failed: " .. tostring(err),
             THEME.Fail,
             self.StatusLabel
         )
@@ -604,19 +587,18 @@ end
 function AutoCratesTab:UpdateSelectButton()
     local THEME = self.Config.THEME
     
-    self.SelectAllBtn.BackgroundColor3 = THEME.CardBg 
+    self.SelectAllBtn.BackgroundColor3 = THEME.CardBg
+    self.SelectAllBtn.TextColor3 = THEME.TextWhite
 
     if self:AreAllSelected() then
         self.SelectAllBtn.Text = "UNSELECT ALL"
-        self.SelectAllBtn.TextColor3 = THEME.Fail or Color3.fromRGB(255, 85, 85)
         
         if self.SelectAllBtnStroke then
-            self.SelectAllBtnStroke.Color = THEME.Fail or Color3.fromRGB(255, 85, 85)
+            self.SelectAllBtnStroke.Color = THEME.Fail
             self.SelectAllBtnStroke.Transparency = 0.4
         end
     else
         self.SelectAllBtn.Text = "SELECT ALL"
-        self.SelectAllBtn.TextColor3 = THEME.TextWhite
         
         if self.SelectAllBtnStroke then
             self.SelectAllBtnStroke.Color = THEME.AccentBlue
@@ -625,11 +607,8 @@ function AutoCratesTab:UpdateSelectButton()
     end
 
     if self.IsProcessing then
-        self.SelectAllBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
         self.SelectAllBtn.TextTransparency = 0.6
-        self.SelectAllBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
         if self.SelectAllBtnStroke then
-            self.SelectAllBtnStroke.Color = Color3.fromRGB(80, 80, 80)
             self.SelectAllBtnStroke.Transparency = 0.8
         end
     else
@@ -677,7 +656,7 @@ function AutoCratesTab:UpdateInfoLabel()
     end
     
     if count > 0 then
-        self.InfoLabel.Text = string.format("📦 Selected: %d types | Total: %d crates", count, total)
+        self.InfoLabel.Text = string.format("Selected: %d types | Total: %d crates", count, total)
         self.InfoLabel.TextColor3 = self.Config.THEME.AccentBlue
     else
         self.InfoLabel.Text = ""
@@ -688,7 +667,13 @@ function AutoCratesTab:ToggleAutoOpen()
     if self.IsProcessing then
         self.ShouldStop = true
         self.AutoOpenBtn.Text = "STOPPING..."
-        self.AutoOpenBtn.BackgroundColor3 = self.Config.THEME.Warning
+        self.AutoOpenBtn.TextColor3 = self.Config.THEME.TextWhite
+        self.AutoOpenBtn.BackgroundColor3 = self.Config.THEME.CardBg
+        
+        if self.AutoOpenBtnStroke then
+            self.AutoOpenBtnStroke.Color = self.Config.THEME.Warning
+            self.AutoOpenBtnStroke.Transparency = 0.4
+        end
     else
         self:StartAutoOpen()
     end
@@ -705,37 +690,41 @@ function AutoCratesTab:StartAutoOpen()
     end
     
     if #selectedList == 0 then
-        self.StateManager:SetStatus("⚠️ No crates selected!", self.Config.THEME.Warning, self.StatusLabel)
+        self.StateManager:SetStatus("[ERROR] No crates selected", self.Config.THEME.Warning, self.StatusLabel)
         return
     end
     
     self.IsProcessing = true
     self.ShouldStop = false
+    
+    local THEME = self.Config.THEME
     self.AutoOpenBtn.Text = "STOP OPEN"
-    self.AutoOpenBtn.TextColor3 = self.Config.THEME.Fail
+    self.AutoOpenBtn.TextColor3 = THEME.TextWhite
+    self.AutoOpenBtn.BackgroundColor3 = THEME.CardBg
+    
     if self.AutoOpenBtnStroke then
-        self.AutoOpenBtnStroke.Color = self.Config.THEME.Fail
+        self.AutoOpenBtnStroke.Color = THEME.Fail
+        self.AutoOpenBtnStroke.Transparency = 0.4
     end
+    
     if self.LockOverlay then
         self.LockOverlay.Visible = true
     end
     
-    self.SelectAllBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
-    self.SelectAllBtn.TextColor3 = Color3.fromRGB(100, 100, 100)
+    self.SelectAllBtn.TextTransparency = 0.6
     
     task.spawn(function()
         self:ProcessCrateOpening(selectedList)
     end)
 end
 
--- ✅ ฟังก์ชันเปิดกล่องพร้อม Auto Delete
 function AutoCratesTab:ProcessCrateOpening(selectedList)
     local THEME = self.Config.THEME
     local CratesService = ReplicatedStorage.Packages.Knit.Services.CratesService
     local UseCrateRemote = CratesService.RF:FindFirstChild("UseCrateItem")
     
     if not UseCrateRemote then
-        self.StateManager:SetStatus("❌ Remote not found!", THEME.Fail, self.StatusLabel)
+        self.StateManager:SetStatus("[ERROR] Remote not found", THEME.Fail, self.StatusLabel)
         self:ResetButton()
         return
     end
@@ -745,7 +734,7 @@ function AutoCratesTab:ProcessCrateOpening(selectedList)
     
     for typeIndex, crateData in ipairs(selectedList) do
         if self.ShouldStop then
-            self.StateManager:SetStatus("⏸️ Stopped by user", THEME.Warning, self.StatusLabel)
+            self.StateManager:SetStatus("[STOPPED] Stopped by user", THEME.Warning, self.StatusLabel)
             break
         end
         
@@ -757,7 +746,7 @@ function AutoCratesTab:ProcessCrateOpening(selectedList)
         if not cardData then continue end
         
         self.StateManager:SetStatus(
-            string.format("🎁 Opening %s... (%d/%d)", crateName, typeIndex, totalTypes),
+            string.format("[OPENING] %s... (%d/%d)", crateName, typeIndex, totalTypes),
             THEME.AccentBlue,
             self.StatusLabel
         )
@@ -765,15 +754,13 @@ function AutoCratesTab:ProcessCrateOpening(selectedList)
         while opened < targetAmount do
             if self.ShouldStop then break end
             
-            -- ✅ ตรวจสอบช่องว่าง Accessories ก่อนเปิด
             local count, space = self:GetAccessorySpace()
             self:UpdateAccessoryStatus()
             
-            -- ✅ ถ้าช่องว่าง <= 16 และเปิด Auto Delete
             if space <= AUTO_DELETE_CONFIG.SAFE_THRESHOLD then
                 if self.AutoDeleteEnabled then
                     self.StateManager:SetStatus(
-                        string.format("🗑️ Space low (%d) - Deleting...", space),
+                        string.format("[LOW SPACE] %d remaining - Deleting...", space),
                         THEME.Warning,
                         self.StatusLabel
                     )
@@ -784,15 +771,13 @@ function AutoCratesTab:ProcessCrateOpening(selectedList)
                         count, space = self:GetAccessorySpace()
                         self:UpdateAccessoryStatus()
                     else
-                        -- ลบไม่สำเร็จ หยุดเปิด
-                        self.StateManager:SetStatus("❌ Delete failed - Stopping", THEME.Fail, self.StatusLabel)
+                        self.StateManager:SetStatus("[ERROR] Delete failed - Stopping", THEME.Fail, self.StatusLabel)
                         self.ShouldStop = true
                         break
                     end
                 else
-                    -- ไม่ได้เปิด Auto Delete และของเต็ม หยุดเปิด
                     self.StateManager:SetStatus(
-                        string.format("⚠️ Inventory full (%d/%d) - Stopping", count, AUTO_DELETE_CONFIG.MAX_ACCESSORIES),
+                        string.format("[FULL] Inventory full (%d/%d)", count, AUTO_DELETE_CONFIG.MAX_ACCESSORIES),
                         THEME.Fail,
                         self.StatusLabel
                     )
@@ -801,11 +786,10 @@ function AutoCratesTab:ProcessCrateOpening(selectedList)
                 end
             end
             
-            -- ✅ ตรวจสอบซ้ำหลังลบ ว่ายังมีที่ว่างพอเปิดต่อไหม
             count, space = self:GetAccessorySpace()
             if space < AUTO_DELETE_CONFIG.BATCH_SIZE then
                 self.StateManager:SetStatus(
-                    string.format("⚠️ Not enough space (%d) - Stopping", space),
+                    string.format("[ERROR] Not enough space (%d)", space),
                     THEME.Fail,
                     self.StatusLabel
                 )
@@ -831,7 +815,7 @@ function AutoCratesTab:ProcessCrateOpening(selectedList)
                 
                 if self.InfoLabel then
                     self.InfoLabel.Text = string.format(
-                        "✅ Opened: %d | %s: %d/%d (Left: %d)",
+                        "[PROGRESS] Opened: %d | %s: %d/%d (Left: %d)",
                         totalOpened,
                         crateName,
                         opened,
@@ -845,7 +829,7 @@ function AutoCratesTab:ProcessCrateOpening(selectedList)
             else
                 warn("Failed to open " .. crateName .. ": " .. tostring(err))
                 self.StateManager:SetStatus(
-                    string.format("⚠️ Error on %s: %s", crateName, tostring(err)),
+                    string.format("[ERROR] %s: %s", crateName, tostring(err)),
                     THEME.Warning,
                     self.StatusLabel
                 )
@@ -890,13 +874,13 @@ function AutoCratesTab:ProcessCrateOpening(selectedList)
     
     if self.ShouldStop then
         self.StateManager:SetStatus(
-            string.format("⏸️ Stopped! Opened %d crates", totalOpened),
+            string.format("[STOPPED] Opened %d crates", totalOpened),
             THEME.Warning,
             self.StatusLabel
         )
     else
         self.StateManager:SetStatus(
-            string.format("✅ Done! Opened %d crates total", totalOpened),
+            string.format("[COMPLETE] Opened %d crates", totalOpened),
             THEME.Success,
             self.StatusLabel
         )
@@ -918,10 +902,11 @@ function AutoCratesTab:ResetButton()
     
     self.AutoOpenBtn.Text = "START OPEN"
     self.AutoOpenBtn.TextColor3 = THEME.TextWhite
-    self.AutoOpenBtn.BackgroundColor3 = THEME.CardBg 
+    self.AutoOpenBtn.BackgroundColor3 = THEME.CardBg
     
     if self.AutoOpenBtnStroke then
         self.AutoOpenBtnStroke.Color = THEME.AccentBlue
+        self.AutoOpenBtnStroke.Transparency = 0.4
     end
     
     if self.LockOverlay then
