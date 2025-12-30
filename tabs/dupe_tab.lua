@@ -350,16 +350,21 @@ function DupeTab:CreateItemCard(recipe, playerData)
     Card.BorderSizePixel = 0
     self.UIFactory.AddCorner(Card, 10)
     
+    local strokeColor = THEME.GlassStroke
     local statusText = ""
-
+    
     if isOwned then
+        strokeColor = THEME.Fail
         statusText = "<font color='#ff5555' size='9'>(OWNED)</font>"
-        self.UIFactory.AddStroke(Card, THEME.Fail, 2, 0.3)
     elseif isReady then
+        strokeColor = THEME.AccentBlue
         statusText = "<font color='#00ffaa' size='10'>✓ READY</font>"
-        self.UIFactory.AddStroke(Card, THEME.DupeReady, 2, 0.3)
+    else
+        strokeColor = THEME.Warning
+        statusText = string.format("<font color='#ffcc33' size='9'>Missing: %d/%d</font>", foundCount, totalNeeded)
     end
-
+    
+    self.UIFactory.AddStroke(Card, strokeColor, 1.5, 0.4)
     
     local Image = Instance.new("ImageLabel", Card)
     Image.BackgroundTransparency = 1
@@ -491,7 +496,7 @@ function DupeTab:CreateCrateCard(crate, inventoryCrates)
     
     local Card = Instance.new("Frame", self.Container)
     Card.Name = crate.DisplayName
-    Card.BackgroundColor3 = isOwnedInSystem and Color3.fromRGB(35, 25, 25) or THEME.CardBg
+    Card.BackgroundColor3 = THEME.CardBg  // ✅ ใช้สีเดียวกันหมดเลย
     Card.BackgroundTransparency = 0.2
     Card.BorderSizePixel = 0
     
@@ -508,7 +513,7 @@ function DupeTab:CreateCrateCard(crate, inventoryCrates)
     Image.BackgroundTransparency = 1
     Image.Position = UDim2.new(0.5, -30, 0, 10)
     Image.Size = UDim2.new(0, 60, 0, 60)
-    Image.ImageTransparency = isOwnedInSystem and 0.6 or 0
+    Image.ImageTransparency = 0
     local imgId = tostring(crate.Image)
     if not imgId:find("rbxassetid://") then imgId = "rbxassetid://" .. imgId end
     Image.Image = imgId
