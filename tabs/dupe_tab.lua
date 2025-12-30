@@ -127,7 +127,7 @@ function DupeTab:CreateFloatingButtons(parent)
     })
     self.FloatingButtons.BtnDupePet.ZIndex = 101
     self.FloatingButtons.BtnDupePet.Visible = false
-    self.UIFactory.AddStroke(self.FloatingButtons.BtnDupePet, THEME.AccentCyan, 1.5, 0.4)
+    self.UIFactory.AddStroke(self.FloatingButtons.BtnDupePet, THEME.AccentBlue, 1.5, 0.4)
     
 
     self.FloatingButtons.BtnEvoPet = self.UIFactory.CreateButton({
@@ -143,7 +143,7 @@ function DupeTab:CreateFloatingButtons(parent)
     self.FloatingButtons.BtnEvoPet.ZIndex = 101
     self.FloatingButtons.BtnEvoPet.Visible = false
 
-    self.UIFactory.AddStroke(self.FloatingButtons.BtnEvoPet, THEME.AccentCyan, 1.5, 0.4)
+    self.UIFactory.AddStroke(self.FloatingButtons.BtnEvoPet, THEME.AccentBlue, 1.5, 0.4)
     
 
     self.FloatingButtons.BtnDeletePet = self.UIFactory.CreateButton({
@@ -174,7 +174,7 @@ function DupeTab:CreateFloatingButtons(parent)
         self.FloatingButtons.BtnAddAll1k.ZIndex = 101
         self.FloatingButtons.BtnAddAll1k.Visible = false
 
-        self.UIFactory.AddStroke(self.FloatingButtons.BtnAddAll1k, THEME.AccentCyan, 1.5, 0.4)
+        self.UIFactory.AddStroke(self.FloatingButtons.BtnAddAll1k, THEME.AccentBlue, 1.5, 0.4)
     end
 end
 
@@ -206,7 +206,7 @@ function DupeTab:SwitchSubTab(name)
 
     for tabName, btn in pairs(self.SubTabButtons) do
         local isSelected = (tabName == name)
-        btn.BackgroundColor3 = isSelected and THEME.AccentCyan or THEME.BtnDefault
+        btn.BackgroundColor3 = isSelected and THEME.AccentBlue or THEME.BtnDefault
         btn.TextColor3 = isSelected and THEME.TextWhite or THEME.TextGray
     end
     
@@ -606,7 +606,7 @@ function DupeTab:OnAddAllCrates(cratesList, inventoryCrates, quantity)
         self.FloatingButtons.BtnAddAll1k.Active = false
         self.FloatingButtons.BtnAddAll1k.Text = "ADDING..."
     end
-    self.StateManager:SetStatus("🚀 Adding missing crates (" .. quantity .. ")...", THEME.AccentCyan, self.StatusLabel)
+    self.StateManager:SetStatus("🚀 Adding missing crates (" .. quantity .. ")...", THEME.AccentBlue, self.StatusLabel)
 
     
     task.spawn(function()
@@ -681,7 +681,7 @@ function DupeTab:RenderPetDupeGrid()
         tip.ZIndex = 300
         tip.Visible = false
         
-        self.UIFactory.AddStroke(tip, THEME.AccentCyan, 1, 0.5)
+        self.UIFactory.AddStroke(tip, THEME.AccentBlue, 1, 0.5)
         self.UIFactory.AddCorner(tip, 6)
         self.TooltipRef = tip
         
@@ -776,7 +776,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
     OrderBadge.Name = "OrderBadge"
     OrderBadge.Size = UDim2.new(0, 26, 0, 26)
     OrderBadge.Position = UDim2.new(1, -30, 0, 4)
-    OrderBadge.BackgroundColor3 = THEME.AccentCyan
+    OrderBadge.BackgroundColor3 = THEME.AccentBlue
     OrderBadge.TextColor3 = THEME.TextWhite
     OrderBadge.Font = Enum.Font.GothamBold
     OrderBadge.TextSize = 14
@@ -941,7 +941,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
             self.TooltipRef.Text = " UUID: " .. uuid .. " "
             self.TooltipRef.Visible = true
             if UUIDDisplay:FindFirstChild("UIStroke") then
-                UUIDDisplay.UIStroke.Color = THEME.AccentCyan
+                UUIDDisplay.UIStroke.Color = THEME.AccentBlue
             end
         end
     end)
@@ -1055,7 +1055,7 @@ function DupeTab:UpdateEvoButtonState()
         self.FloatingButtons.BtnEvoPet.TextColor3 = THEME.TextWhite
         
         if self.FloatingButtons.BtnEvoPet:FindFirstChild("UIStroke") then
-            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.AccentCyan
+            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.AccentBlue
             self.FloatingButtons.BtnEvoPet.UIStroke.Thickness = 1.5
             self.FloatingButtons.BtnEvoPet.UIStroke.Transparency = 0.4
         end
@@ -1110,7 +1110,7 @@ function DupeTab:ShowQuantityPopup(itemData, onConfirm)
     popupBox.BorderSizePixel = 0
     
     self.UIFactory.AddCorner(popupBox, 10)
-    self.UIFactory.AddStroke(popupBox, THEME.AccentCyan, 2, 0)
+    self.UIFactory.AddStroke(popupBox, THEME.AccentBlue, 2, 0)
     
     local titleLabel = self.UIFactory.CreateLabel({
         Parent = popupBox,
@@ -1154,7 +1154,7 @@ function DupeTab:ShowQuantityPopup(itemData, onConfirm)
         Size = UDim2.new(0.85, 0, 0, 34),
         Position = UDim2.new(0.075, 0, 0.7, 0),
         Text = "CONFIRM",
-        BgColor = THEME.AccentCyan,
+        BgColor = THEME.AccentBlue,
         CornerRadius = 6,
         Parent = popupBox
     })
