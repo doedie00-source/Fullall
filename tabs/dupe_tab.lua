@@ -149,7 +149,7 @@ function DupeTab:CreateFloatingButtons(parent)
     self.FloatingButtons.BtnDeletePet = self.UIFactory.CreateButton({
         Size = UDim2.new(0, btnWidth, 0, btnHeight),
         Position = UDim2.new(1, startX - btnWidth*3 - spacing*2 - 15, 1, -38),
-        Text = "🗑️ DELETE",
+        Text = "DELETE",
         BgColor = THEME.CardBg, -- ✅ ใช้พื้นหลังสี Card
         TextSize = 12,
         Font = Enum.Font.GothamBold,
@@ -159,7 +159,7 @@ function DupeTab:CreateFloatingButtons(parent)
     self.FloatingButtons.BtnDeletePet.ZIndex = 101
     self.FloatingButtons.BtnDeletePet.Visible = false
 
-    self.UIFactory.AddStroke(self.FloatingButtons.BtnDeletePet, THEME.Fail, 1.5, 0.4)
+    self.UIFactory.AddStroke(self.FloatingButtons.BtnDeletePet, THEME.AccentBlue, 1.5, 0.4)
     
     self.FloatingButtons.BtnAddAll1k = self.UIFactory.CreateButton({
         Size = UDim2.new(0, 140, 0, btnHeight),
