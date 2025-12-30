@@ -374,7 +374,6 @@ function DupeTab:CreateItemCard(recipe, playerData)
     Image.Size = UDim2.new(0, 64, 0, 64)
     Image.Image = "rbxassetid://" .. (recipe.Image or "0")
     Image.ScaleType = Enum.ScaleType.Fit
-    if isOwned then Image.ImageColor3 = THEME.GlassStroke end
     
     local NameLbl = Instance.new("TextLabel", Card)
     NameLbl.BackgroundTransparency = 1
@@ -386,7 +385,7 @@ function DupeTab:CreateItemCard(recipe, playerData)
     NameLbl.TextYAlignment = Enum.TextYAlignment.Top
     NameLbl.RichText = true
     NameLbl.Text = recipe.Name .. "\n" .. statusText
-    NameLbl.TextColor3 = isOwned and Color3.fromRGB(120, 120, 120) or THEME.TextWhite
+    NameLbl.TextColor3 = isOwned and THEME.TextGray or THEME.TextWhite
     
     local ClickBtn = Instance.new("TextButton", Card)
     ClickBtn.BackgroundTransparency = 1
