@@ -683,7 +683,7 @@ function DupeTab:RenderPetDupeGrid()
         tip.ZIndex = 300
         tip.Visible = false
         
-        self.UIFactory.AddStroke(tip, THEME.AccentPurple, 1, 0.5)
+        self.UIFactory.AddStroke(tip, THEME.AccentBlue, 1, 0.5)
         self.UIFactory.AddCorner(tip, 6)
         self.TooltipRef = tip
         
@@ -778,7 +778,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
     OrderBadge.Name = "OrderBadge"
     OrderBadge.Size = UDim2.new(0, 26, 0, 26)
     OrderBadge.Position = UDim2.new(1, -30, 0, 4)
-    OrderBadge.BackgroundColor3 = THEME.AccentPurple
+    OrderBadge.BackgroundColor3 = THEME.AccentBlue
     OrderBadge.TextColor3 = THEME.TextWhite
     OrderBadge.Font = Enum.Font.GothamBold
     OrderBadge.TextSize = 14
@@ -943,7 +943,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
             self.TooltipRef.Text = " UUID: " .. uuid .. " "
             self.TooltipRef.Visible = true
             if UUIDDisplay:FindFirstChild("UIStroke") then
-                UUIDDisplay.UIStroke.Color = THEME.AccentPurple
+                UUIDDisplay.UIStroke.Color = THEME.AccentBlue
             end
         end
     end)
@@ -1057,7 +1057,7 @@ function DupeTab:UpdateEvoButtonState()
         self.FloatingButtons.BtnEvoPet.TextColor3 = THEME.TextWhite
         
         if self.FloatingButtons.BtnEvoPet:FindFirstChild("UIStroke") then
-            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.AccentPurple
+            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.AccentBlue
             self.FloatingButtons.BtnEvoPet.UIStroke.Thickness = 1.5
             self.FloatingButtons.BtnEvoPet.UIStroke.Transparency = 0.4
         end
@@ -1112,7 +1112,7 @@ function DupeTab:ShowQuantityPopup(itemData, onConfirm)
     popupBox.BorderSizePixel = 0
     
     self.UIFactory.AddCorner(popupBox, 10)
-    self.UIFactory.AddStroke(popupBox, THEME.AccentPurple, 2, 0)
+    self.UIFactory.AddStroke(popupBox, THEME.AccentBlue, 2, 0)
     
     local titleLabel = self.UIFactory.CreateLabel({
         Parent = popupBox,
@@ -1156,7 +1156,7 @@ function DupeTab:ShowQuantityPopup(itemData, onConfirm)
         Size = UDim2.new(0.85, 0, 0, 34),
         Position = UDim2.new(0.075, 0, 0.7, 0),
         Text = "CONFIRM",
-        BgColor = THEME.AccentPurple,
+        BgColor = THEME.AccentBlue,
         CornerRadius = 6,
         Parent = popupBox
     })
