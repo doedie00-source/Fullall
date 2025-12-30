@@ -153,7 +153,7 @@ function GUI:CreateTitleBar()
     -- Title with Professional Styling
     local titleLabel = self.UIFactory.CreateLabel({
         Parent = titleBar,
-        Text = "  UNIVERSAL TRADER",
+        Text = "    UNIVERSAL TRADER",
         Size = UDim2.new(0.5, 0, 1, 0),
         TextColor = THEME.TextWhite,
         TextSize = 13,
@@ -161,23 +161,6 @@ function GUI:CreateTitleBar()
         TextXAlign = Enum.TextXAlignment.Left
     })
     
-    -- Clean Version Badge
-    local versionBadge = Instance.new("Frame", titleBar)
-    versionBadge.Size = UDim2.new(0, 48, 0, 20)
-    versionBadge.Position = UDim2.new(0, 190, 0.5, -10)
-    versionBadge.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
-    versionBadge.BackgroundTransparency = 0
-    versionBadge.BorderSizePixel = 0
-    self.UIFactory.AddCorner(versionBadge, 4)
-    
-    local versionText = self.UIFactory.CreateLabel({
-        Parent = versionBadge,
-        Text = "V" .. CONFIG.VERSION:match("(%d+%.%d+)"),
-        Size = UDim2.new(1, 0, 1, 0),
-        TextColor = THEME.TextWhite,
-        TextSize = 10,
-        Font = Enum.Font.GothamBold
-    })
     
     -- Modern Window Controls
     self.UIFactory.CreateButton({
@@ -231,11 +214,14 @@ function GUI:CreateSidebar()
     
     local logoText = self.UIFactory.CreateLabel({
         Parent = logoFrame,
-        Text = "T",
+        
+        -- [[ แก้ไขตรงนี้ ]] --
+        Text = "v" .. CONFIG.VERSION,
         Size = UDim2.new(1, 0, 1, 0),
         TextColor = THEME.AccentBlue,
-        TextSize = 30,
+        TextSize = 20,               
         Font = Enum.Font.GothamBlack
+        ---------------------
     })
     
     -- Separator Line
