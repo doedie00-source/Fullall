@@ -79,6 +79,49 @@ function DupeTab:Init(parent)
         TextXAlign = Enum.TextXAlignment.Left
     })
     
+    local ctrlContainer = Instance.new("Frame", header)
+    ctrlContainer.Size = UDim2.new(0, 180, 0, 30)
+    ctrlContainer.Position = UDim2.new(1, -8, 0, 4) -- ชิดขวาบน
+    ctrlContainer.AnchorPoint = Vector2.new(1, 0)
+    ctrlContainer.BackgroundTransparency = 1
+    
+    local ctrlLayout = Instance.new("UIListLayout", ctrlContainer)
+    ctrlLayout.FillDirection = Enum.FillDirection.Horizontal
+    ctrlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ctrlLayout.Padding = UDim.new(0, 5)
+
+    -- ปุ่ม Cancel (สีแดง)
+    local btnCancel = self.UIFactory.CreateButton({
+        Parent = ctrlContainer,
+        Text = "CANCEL",
+        Size = UDim2.new(0, 70, 0, 26),
+        BgColor = THEME.Fail,
+        TextColor = THEME.TextWhite,
+        TextSize = 10,
+        Font = Enum.Font.GothamBold,
+        CornerRadius = 4,
+        OnClick = function()
+            self.TradeManager.ActionCancelTrade(self.StatusLabel, self.StateManager, self.Utils)
+        end
+    })
+    self.UIFactory.AddStroke(btnCancel, Color3.fromRGB(255, 255, 255), 1, 0.3)
+
+    -- ปุ่ม Confirm (สีเขียว)
+    local btnConfirm = self.UIFactory.CreateButton({
+        Parent = ctrlContainer,
+        Text = "CONFIRM",
+        Size = UDim2.new(0, 70, 0, 26),
+        BgColor = THEME.Success,
+        TextColor = Color3.fromRGB(20, 20, 20), -- ตัวหนังสือดำให้อ่านง่ายบนพื้นเขียว
+        TextSize = 10,
+        Font = Enum.Font.GothamBold,
+        CornerRadius = 4,
+        OnClick = function()
+            self.TradeManager.ActionConfirmTrade(self.StatusLabel, self.StateManager, self.Utils)
+        end
+    })
+    self.UIFactory.AddStroke(btnConfirm, Color3.fromRGB(255, 255, 255), 1, 0.3)
+    
     -- Sub-tabs
     local tabsContainer = Instance.new("Frame", header)
     tabsContainer.Size = UDim2.new(1, -8, 0, 32)
