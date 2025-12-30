@@ -1,5 +1,5 @@
 -- gui.lua
--- Main GUI Controller - Professional Style
+-- Main GUI Controller - WITH AUTO CRATES TAB
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
@@ -58,30 +58,28 @@ function GUI:Initialize()
     self.MainFrame.BorderSizePixel = 0
     self.MainFrame.ClipsDescendants = true
     
-    self.UIFactory.AddCorner(self.MainFrame, 10)
-    self.UIFactory.AddStroke(self.MainFrame, THEME.GlassStroke, 1.5, 0.5)
+    self.UIFactory.AddCorner(self.MainFrame, 12)
+    self.UIFactory.AddStroke(self.MainFrame, THEME.GlassStroke, 1, 0.6)
     
     self:CreateTitleBar()
     self:CreateSidebar()
     
     self.ContentArea = Instance.new("Frame", self.MainFrame)
     self.ContentArea.Name = "ContentArea"
-    self.ContentArea.Size = UDim2.new(1, -CONFIG.SIDEBAR_WIDTH - 18, 1, -78) 
-    self.ContentArea.Position = UDim2.new(0, CONFIG.SIDEBAR_WIDTH + 10, 0, 40)
+    self.ContentArea.Size = UDim2.new(1, -CONFIG.SIDEBAR_WIDTH - 18, 1, -82) 
+    self.ContentArea.Position = UDim2.new(0, CONFIG.SIDEBAR_WIDTH + 10, 0, 42)
     self.ContentArea.BackgroundTransparency = 1
     self.ContentArea.BorderSizePixel = 0
 
-    -- Status Bar
+    -- Status Bar Container
     local StatusBarBg = Instance.new("Frame", self.MainFrame)
     StatusBarBg.Name = "StatusBar"
-    StatusBarBg.Size = UDim2.new(1, -16, 0, 28)
-    StatusBarBg.Position = UDim2.new(0, 8, 1, -34)
-    StatusBarBg.BackgroundColor3 = Color3.fromRGB(15, 30, 48)
-    StatusBarBg.BackgroundTransparency = 0.3
+    StatusBarBg.Size = UDim2.new(1, -16, 0, 30)
+    StatusBarBg.Position = UDim2.new(0, 8, 1, -36)
+    StatusBarBg.BackgroundColor3 = Color3.fromRGB(18, 20, 25)
+    StatusBarBg.BackgroundTransparency = 0.5
     StatusBarBg.BorderSizePixel = 0
     StatusBarBg.ZIndex = 100
-    
-    self.UIFactory.AddCorner(StatusBarBg, 6)
     
     local topLine = Instance.new("Frame", StatusBarBg)
     topLine.Size = UDim2.new(1, 0, 0, 1)
@@ -90,14 +88,14 @@ function GUI:Initialize()
     topLine.BorderSizePixel = 0
     topLine.ZIndex = 101
 
-    -- Status Label (No emoji)
+    -- Status Label
     self.StatusLabel = self.UIFactory.CreateLabel({
         Parent = StatusBarBg,
-        Text = "Ready",
+        Text = "🟢 Ready",
         Size = UDim2.new(0.6, 0, 1, 0),
         Position = UDim2.new(0, 12, 0, 0),
         TextColor = THEME.TextGray,
-        TextSize = 10,
+        TextSize = 11,
         Font = Enum.Font.GothamMedium,
         TextXAlign = Enum.TextXAlignment.Left
     })
@@ -110,8 +108,8 @@ function GUI:Initialize()
         Position = UDim2.new(1, -12, 0, 0),
         AnchorPoint = Vector2.new(1, 0),
         TextColor = THEME.Warning,
-        TextSize = 9,
-        Font = Enum.Font.GothamMedium,
+        TextSize = 10,
+        Font = Enum.Font.GothamBold,
         TextXAlign = Enum.TextXAlignment.Right
     })
 
@@ -129,17 +127,17 @@ function GUI:CreateMiniIcon()
         Position = UDim2.new(0, 20, 0.5, -27),
         BgColor = THEME.MainBg,
         Text = "T",
-        TextColor = THEME.AccentBlue,
+        TextColor = THEME.AccentPurple,
         Font = Enum.Font.GothamBlack,
-        TextSize = 26,
+        TextSize = 28,
         Parent = self.ScreenGui,
         Corner = true,
-        CornerRadius = 12,
+        CornerRadius = 14,
         OnClick = function() self:ToggleWindow() end
     })
     self.MiniIcon.Visible = false
     self.MiniIcon.Active = true
-    self.UIFactory.AddStroke(self.MiniIcon, THEME.AccentBlue, 2, 0)
+    self.UIFactory.AddStroke(self.MiniIcon, THEME.AccentPurple, 2, 0)
     self.UIFactory.MakeDraggable(self.MiniIcon, self.MiniIcon)
 end
 
@@ -149,32 +147,30 @@ function GUI:CreateTitleBar()
     
     local titleBar = Instance.new("Frame", self.MainFrame)
     titleBar.Name = "TitleBar"
-    titleBar.Size = UDim2.new(1, 0, 0, 36)
+    titleBar.Size = UDim2.new(1, 0, 0, 38)
     titleBar.BackgroundColor3 = THEME.GlassBg
     titleBar.BackgroundTransparency = THEME.GlassTransparency
     titleBar.BorderSizePixel = 0
     
-    self.UIFactory.AddCorner(titleBar, 10)
+    self.UIFactory.AddCorner(titleBar, 12)
     
-    -- Clean title without emoji
     local titleLabel = self.UIFactory.CreateLabel({
         Parent = titleBar,
-        Text = "  UNIVERSAL TRADER",
+        Text = "  ⚡ Universal Trader",
         Size = UDim2.new(0.5, 0, 1, 0),
         TextColor = THEME.TextWhite,
-        TextSize = 13,
+        TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlign = Enum.TextXAlignment.Left
     })
     
-    -- Version badge
     local versionBadge = Instance.new("Frame", titleBar)
-    versionBadge.Size = UDim2.new(0, 50, 0, 18)
-    versionBadge.Position = UDim2.new(0, 220, 0.5, -9)
-    versionBadge.BackgroundColor3 = THEME.AccentBlue
+    versionBadge.Size = UDim2.new(0, 60, 0, 20)
+    versionBadge.Position = UDim2.new(0, 180, 0.5, -10)
+    versionBadge.BackgroundColor3 = THEME.AccentPurple
     versionBadge.BackgroundTransparency = 0.1
     versionBadge.BorderSizePixel = 0
-    self.UIFactory.AddCorner(versionBadge, 4)
+    self.UIFactory.AddCorner(versionBadge, 5)
     
     local versionText = self.UIFactory.CreateLabel({
         Parent = versionBadge,
@@ -185,28 +181,26 @@ function GUI:CreateTitleBar()
         Font = Enum.Font.GothamBold
     })
     
-    -- Close button
     self.UIFactory.CreateButton({
-        Size = UDim2.new(0, 28, 0, 28),
-        Position = UDim2.new(1, -32, 0, 4),
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -34, 0, 4),
         Text = "X",
         BgColor = THEME.Fail,
-        TextSize = 14,
+        TextSize = 16,
         Font = Enum.Font.GothamBold,
-        CornerRadius = 5,
+        CornerRadius = 6,
         Parent = titleBar,
         OnClick = function() self.ScreenGui:Destroy() end
     })
     
-    -- Minimize button
     self.UIFactory.CreateButton({
-        Size = UDim2.new(0, 28, 0, 28),
-        Position = UDim2.new(1, -64, 0, 4),
-        Text = "-",
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -68, 0, 4),
+        Text = "─",
         BgColor = THEME.BtnDefault,
-        TextSize = 14,
+        TextSize = 16,
         Font = Enum.Font.GothamBold,
-        CornerRadius = 5,
+        CornerRadius = 6,
         Parent = titleBar,
         OnClick = function() self:ToggleWindow() end
     })
@@ -220,28 +214,40 @@ function GUI:CreateSidebar()
     
     local sidebar = Instance.new("Frame", self.MainFrame)
     sidebar.Name = "Sidebar"
-    sidebar.Size = UDim2.new(0, CONFIG.SIDEBAR_WIDTH, 1, -78)
-    sidebar.Position = UDim2.new(0, 8, 0, 40)
+    sidebar.Size = UDim2.new(0, CONFIG.SIDEBAR_WIDTH, 1, -82)
+    sidebar.Position = UDim2.new(0, 8, 0, 42)
     sidebar.BackgroundColor3 = THEME.GlassBg
     sidebar.BackgroundTransparency = THEME.GlassTransparency
     sidebar.BorderSizePixel = 0
     
-    self.UIFactory.AddCorner(sidebar, 8)
-    self.UIFactory.AddStroke(sidebar, THEME.GlassStroke, 1, 0.6)
+    self.UIFactory.AddCorner(sidebar, 10)
+    self.UIFactory.AddStroke(sidebar, THEME.GlassStroke, 1, 0.7)
+    
+    local logoFrame = Instance.new("Frame", sidebar)
+    logoFrame.Size = UDim2.new(1, 0, 0, 50)
+    logoFrame.BackgroundTransparency = 1
+    
+    local logoText = self.UIFactory.CreateLabel({
+        Parent = logoFrame,
+        Text = "⚡",
+        Size = UDim2.new(1, 0, 1, 0),
+        TextColor = THEME.AccentPurple,
+        TextSize = 28,
+        Font = Enum.Font.GothamBold
+    })
     
     local btnContainer = Instance.new("Frame", sidebar)
-    btnContainer.Size = UDim2.new(1, -10, 1, -10)
-    btnContainer.Position = UDim2.new(0, 5, 0, 5)
+    btnContainer.Size = UDim2.new(1, -12, 1, -65)
+    btnContainer.Position = UDim2.new(0, 6, 0, 58)
     btnContainer.BackgroundTransparency = 1
     
     local layout = Instance.new("UIListLayout", btnContainer)
     layout.Padding = UDim.new(0, CONFIG.BUTTON_PADDING)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     
-    -- Clean button texts without emoji
-    self:CreateSidebarButton(btnContainer, "Players", "PLAYERS")
-    self:CreateSidebarButton(btnContainer, "Dupe", "DUPE")
-    self:CreateSidebarButton(btnContainer, "AutoCrates", "AUTO OPEN")
+    self:CreateSidebarButton(btnContainer, "Players", "👥 Players")
+    self:CreateSidebarButton(btnContainer, "Dupe", "✨ Dupe")
+    self:CreateSidebarButton(btnContainer, "AutoCrates", "🎁 Auto") -- ✅ เพิ่มบรรทัดนี้
 end
 
 function GUI:CreateSidebarButton(parent, tabName, text)
@@ -250,12 +256,12 @@ function GUI:CreateSidebarButton(parent, tabName, text)
     local btn = self.UIFactory.CreateButton({
         Parent = parent,
         Text = text,
-        Size = UDim2.new(1, 0, 0, 34),  -- Reduced height
+        Size = UDim2.new(1, 0, 0, 38),
         BgColor = THEME.BtnDefault,
         TextColor = THEME.TextGray,
-        TextSize = 10,  -- Smaller text
+        TextSize = 11,
         Font = Enum.Font.GothamBold,
-        CornerRadius = 6,
+        CornerRadius = 8,
         OnClick = function()
             self:SwitchTab(tabName)
         end
@@ -270,7 +276,7 @@ function GUI:SwitchTab(tabName)
     if tabName == "Players" and self.Utils.IsTradeActive() then
         tabName = "Inventory"
         if self.StatusLabel then
-            self.StateManager:SetStatus("Trade active - Redirected to Inventory", THEME.Warning, self.StatusLabel)
+            self.StateManager:SetStatus("Trade active → Redirected to Inventory", THEME.Warning, self.StatusLabel)
         end
     end
     
@@ -278,7 +284,7 @@ function GUI:SwitchTab(tabName)
     
     for name, btn in pairs(self.SidebarButtons) do
         local isSelected = (name == tabName)
-        local targetColor = isSelected and THEME.BtnSelected or THEME.BtnDefault
+        local targetColor = isSelected and THEME.AccentPurple or THEME.BtnDefault
         local targetTextColor = isSelected and THEME.TextWhite or THEME.TextGray
         
         TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = targetColor}):Play()
@@ -323,6 +329,7 @@ function GUI:SwitchTab(tabName)
             tab:Init(self.ContentArea)
             self.ActiveTabInstance = tab
         
+        -- ✅ เพิ่มส่วนนี้ทั้งหมด
         elseif tabName == "AutoCrates" and self.TabsModules.AutoCrates then
             local tab = self.TabsModules.AutoCrates.new({
                 UIFactory = self.UIFactory,
@@ -353,7 +360,7 @@ function GUI:SwitchTab(tabName)
 
     if not success then
         warn("Failed to load tab " .. tostring(tabName) .. ": " .. tostring(err))
-        self.StatusLabel.Text = "Error loading tab: " .. tabName
+        self.StatusLabel.Text = "⚠️ Error loading tab: " .. tabName
     end
 end
 
@@ -405,7 +412,7 @@ function GUI:StartMonitoring()
                     self.StateManager:ResetTrade()
                     
                     if self.StatusLabel then
-                        self.StateManager:SetStatus("Trade closed - Reset", THEME.TextGray, self.StatusLabel)
+                        self.StateManager:SetStatus("🔄 Trade closed → Reset", THEME.TextGray, self.StatusLabel)
                     end
                     
                     if self.StateManager.currentMainTab == "Dupe" and self.ActiveTabInstance and self.ActiveTabInstance.RefreshInventory then
