@@ -67,9 +67,9 @@ local THEME = {
     
     -- Cards (Blue)
     CardBg = Color3.fromRGB(20, 30, 45),            -- Card Background
-    CardStrokeSelected = Color3.fromRGB(80, 160, 255), -- BRIGHT BLUE Border (Selected!)
-    CardStrokeSelected = Color3.fromRGB(220, 240, 255),  -- ขาวฟ้า
-    CrateSelected = Color3.fromRGB(220, 240, 255),       -- ขาวฟ้า
+    CardStrokeSelected = Color3.fromRGB(220, 240, 255), -- ⚪🔵 WHITE-BLUE Border (Selected!)
+    CardStrokeLocked = Color3.fromRGB(220, 75, 75),    -- RED Border (Locked!)
+    CrateSelected = Color3.fromRGB(220, 240, 255),      -- ⚪🔵 WHITE-BLUE (Selected crate border)
     
     -- Accent Colors (Blue-White Palette)
     StarColor = Color3.fromRGB(255, 220, 100),      -- Gold Star
