@@ -93,7 +93,7 @@ function GUI:Initialize()
     -- Status Label
     self.StatusLabel = self.UIFactory.CreateLabel({
         Parent = StatusBarBg,
-        Text = "● Ready",
+        Text = "Ready",
         Size = UDim2.new(0.6, 0, 1, 0),
         Position = UDim2.new(0, 12, 0, 0),
         TextColor = THEME.TextGray,
@@ -128,7 +128,7 @@ function GUI:CreateMiniIcon()
         Size = CONFIG.MINI_ICON_SIZE,
         Position = UDim2.new(0, 20, 0.5, -27),
         BgColor = THEME.MainBg,
-        Text = "⚡",
+        Text = "T",
         TextColor = THEME.AccentBlue,
         Font = Enum.Font.GothamBlack,
         TextSize = 26,
@@ -158,7 +158,7 @@ function GUI:CreateTitleBar()
     
     local titleLabel = self.UIFactory.CreateLabel({
         Parent = titleBar,
-        Text = "  ⚡ UNIVERSAL TRADER",
+        Text = "  UNIVERSAL TRADER",
         Size = UDim2.new(0.5, 0, 1, 0),
         TextColor = THEME.TextWhite,
         TextSize = 13,
@@ -236,7 +236,7 @@ function GUI:CreateSidebar()
     
     local logoText = self.UIFactory.CreateLabel({
         Parent = logoFrame,
-        Text = "⚡",
+        Text = "T",
         Size = UDim2.new(1, 0, 1, 0),
         TextColor = THEME.AccentBlue,
         TextSize = 26,
@@ -252,9 +252,9 @@ function GUI:CreateSidebar()
     layout.Padding = UDim.new(0, 6)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     
-    self:CreateSidebarButton(btnContainer, "Players", "👤 Players")
-    self:CreateSidebarButton(btnContainer, "Dupe", "💎 Dupe")
-    self:CreateSidebarButton(btnContainer, "AutoCrates", "🎁 Auto")
+    self:CreateSidebarButton(btnContainer, "Players", "PLAYERS")
+    self:CreateSidebarButton(btnContainer, "Dupe", "DUPE")
+    self:CreateSidebarButton(btnContainer, "AutoCrates", "AUTO")
 end
 
 function GUI:CreateSidebarButton(parent, tabName, text)
@@ -418,7 +418,7 @@ function GUI:StartMonitoring()
                     self.StateManager:ResetTrade()
                     
                     if self.StatusLabel then
-                        self.StateManager:SetStatus("● Trade closed → Reset", THEME.TextGray, self.StatusLabel)
+                        self.StateManager:SetStatus("Trade closed - Reset", THEME.TextGray, self.StatusLabel)
                     end
                     
                     if self.StateManager.currentMainTab == "Dupe" and self.ActiveTabInstance and self.ActiveTabInstance.RefreshInventory then
