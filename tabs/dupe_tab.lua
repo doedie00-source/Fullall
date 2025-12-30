@@ -59,7 +59,7 @@ function DupeTab:Init(parent)
     
     local title = self.UIFactory.CreateLabel({
         Parent = header,
-        Text = "MAGIC DUPE SYSTEM",
+        Text = "✨ Magic Dupe System",
         Size = UDim2.new(1, -8, 0, 24),
         Position = UDim2.new(0, 8, 0, 0),
         TextColor = THEME.TextWhite,
@@ -89,9 +89,9 @@ function DupeTab:Init(parent)
     tabsLayout.FillDirection = Enum.FillDirection.Horizontal
     tabsLayout.Padding = UDim.new(0, 6)
     
-    self:CreateSubTab(tabsContainer, "Items", "ITEMS")
-    self:CreateSubTab(tabsContainer, "Crates", "CRATES")
-    self:CreateSubTab(tabsContainer, "Pets", "PETS")
+    self:CreateSubTab(tabsContainer, "Items", "📦 Items")
+    self:CreateSubTab(tabsContainer, "Crates", "🎁 Crates")
+    self:CreateSubTab(tabsContainer, "Pets", "🐾 Pets")
     
     -- Content Container
     self.Container = self.UIFactory.CreateScrollingFrame({
@@ -149,7 +149,7 @@ function DupeTab:CreateFloatingButtons(parent)
     self.FloatingButtons.BtnDeletePet = self.UIFactory.CreateButton({
         Size = UDim2.new(0, btnWidth, 0, btnHeight),
         Position = UDim2.new(1, startX - btnWidth*3 - spacing*2 - 15, 1, -38),
-        Text = "DELETE",
+        Text = "🗑️ DELETE",
         BgColor = THEME.CardBg, -- ✅ ใช้พื้นหลังสี Card
         TextSize = 12,
         Font = Enum.Font.GothamBold,
@@ -232,7 +232,7 @@ function DupeTab:SwitchSubTab(name)
     -- Update Info Label
     if self.InfoLabel then
         if name == "Items" then
-            self.InfoLabel.Text = "LIMITS: Scrolls ~150 | Tickets ~10K | Potions ~2K"
+            self.InfoLabel.Text = "⚠️ LIMITS: Scrolls ~150 | Tickets ~10K | Potions ~2K"
         else
             self.InfoLabel.Text = ""
         end
@@ -261,7 +261,7 @@ end
 
 function DupeTab:UpdateStatusWarning()
     if self.CurrentSubTab == "Items" and self.InfoLabel then
-        self.InfoLabel.Text = "LIMITS: Scrolls ~150 | Tickets ~10K | Potions ~2K"
+        self.InfoLabel.Text = "⚠️ LIMITS: Scrolls ~150 | Tickets ~10K | Potions ~2K"
     elseif self.InfoLabel then
         self.InfoLabel.Text = ""
     end
@@ -374,6 +374,7 @@ function DupeTab:CreateItemCard(recipe, playerData)
     Image.Size = UDim2.new(0, 64, 0, 64)
     Image.Image = "rbxassetid://" .. (recipe.Image or "0")
     Image.ScaleType = Enum.ScaleType.Fit
+    if isOwned then Image.ImageColor3 = Color3.fromRGB(80, 80, 80) end
     
     local NameLbl = Instance.new("TextLabel", Card)
     NameLbl.BackgroundTransparency = 1
@@ -385,7 +386,7 @@ function DupeTab:CreateItemCard(recipe, playerData)
     NameLbl.TextYAlignment = Enum.TextYAlignment.Top
     NameLbl.RichText = true
     NameLbl.Text = recipe.Name .. "\n" .. statusText
-    NameLbl.TextColor3 = isOwned and THEME.TextGray or THEME.TextWhite
+    NameLbl.TextColor3 = isOwned and Color3.fromRGB(120, 120, 120) or THEME.TextWhite
     
     local ClickBtn = Instance.new("TextButton", Card)
     ClickBtn.BackgroundTransparency = 1
@@ -399,17 +400,17 @@ function DupeTab:CreateItemCard(recipe, playerData)
         if self.TradeManager.IsProcessing then return end
         
         if not self.Utils.IsTradeActive() then
-            self.StateManager:SetStatus("Open Trade Menu first!", THEME.Fail, self.StatusLabel)
+            self.StateManager:SetStatus("⚠️ Open Trade Menu first!", THEME.Fail, self.StatusLabel)
             return
         end
         
         if isOwned then
-            self.StateManager:SetStatus("Already Owned (Limit 1)", THEME.Fail, self.StatusLabel)
+            self.StateManager:SetStatus("❌ Already Owned (Limit 1)", THEME.Fail, self.StatusLabel)
             return
         end
         
         if not isReady then
-            self.StateManager:SetStatus(string.format("Missing Ingredients (%d/%d)", foundCount, totalNeeded), THEME.Warning, self.StatusLabel)
+            self.StateManager:SetStatus(string.format("⚠️ Missing Ingredients (%d/%d)", foundCount, totalNeeded), THEME.Warning, self.StatusLabel)
             return
         end
         
@@ -561,12 +562,12 @@ function DupeTab:OnCrateCardClick(crate, isOwnedInSystem)
     local THEME = self.Config.THEME
     
     if not self.Utils.IsTradeActive() then
-        self.StateManager:SetStatus("Open Trade Menu first!", THEME.Fail, self.StatusLabel)
+        self.StateManager:SetStatus("⚠️ Open Trade Menu first!", THEME.Fail, self.StatusLabel)
         return
     end
     
     if isOwnedInSystem then
-        self.StateManager:SetStatus("Locked: You already own this crate", THEME.Fail, self.StatusLabel)
+        self.StateManager:SetStatus("🚫 Locked: You already own this crate", THEME.Fail, self.StatusLabel)
         return
     end
     
@@ -599,7 +600,7 @@ function DupeTab:OnAddAllCrates(cratesList, inventoryCrates, quantity)
     local THEME = self.Config.THEME
     
     if not self.Utils.IsTradeActive() then
-        self.StateManager:SetStatus("Open Trade Menu first!", THEME.Fail, self.StatusLabel)
+        self.StateManager:SetStatus("⚠️ Open Trade Menu first!", THEME.Fail, self.StatusLabel)
         return
     end
     
@@ -607,7 +608,7 @@ function DupeTab:OnAddAllCrates(cratesList, inventoryCrates, quantity)
         self.FloatingButtons.BtnAddAll1k.Active = false
         self.FloatingButtons.BtnAddAll1k.Text = "ADDING..."
     end
-    self.StateManager:SetStatus("Adding missing crates (" .. quantity .. ")...", THEME.AccentBlue, self.StatusLabel)
+    self.StateManager:SetStatus("🚀 Adding missing crates (" .. quantity .. ")...", THEME.AccentBlue, self.StatusLabel)
 
     
     task.spawn(function()
@@ -640,14 +641,14 @@ function DupeTab:OnAddAllCrates(cratesList, inventoryCrates, quantity)
         end
         
         if addedCount > 0 then
-            self.StateManager:SetStatus("Added " .. addedCount .. " new types!", THEME.Success, self.StatusLabel)
+            self.StateManager:SetStatus("✅ Added " .. addedCount .. " new types!", THEME.Success, self.StatusLabel)
         else
             self.StateManager:SetStatus("✨ Nothing new to add", THEME.TextGray, self.StatusLabel)
         end
         
         if self.FloatingButtons.BtnAddAll1k then
             self.FloatingButtons.BtnAddAll1k.Active = true
-            self.FloatingButtons.BtnAddAll1k.Text = "ADD ALL"
+            self.FloatingButtons.BtnAddAll1k.Text = "➕ ADD ALL"
         end
         
         self:RefreshInventory()
@@ -682,7 +683,7 @@ function DupeTab:RenderPetDupeGrid()
         tip.ZIndex = 300
         tip.Visible = false
         
-        self.UIFactory.AddStroke(tip, THEME.AccentBlue, 1, 0.5)
+        self.UIFactory.AddStroke(tip, THEME.AccentPurple, 1, 0.5)
         self.UIFactory.AddCorner(tip, 6)
         self.TooltipRef = tip
         
@@ -777,7 +778,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
     OrderBadge.Name = "OrderBadge"
     OrderBadge.Size = UDim2.new(0, 26, 0, 26)
     OrderBadge.Position = UDim2.new(1, -30, 0, 4)
-    OrderBadge.BackgroundColor3 = THEME.AccentBlue
+    OrderBadge.BackgroundColor3 = THEME.AccentPurple
     OrderBadge.TextColor3 = THEME.TextWhite
     OrderBadge.Font = Enum.Font.GothamBold
     OrderBadge.TextSize = 14
@@ -925,7 +926,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
             local originalText = shortID
             UUIDDisplay.Text = "COPIED!"
             UUIDDisplay.TextColor3 = THEME.Success
-            self.StateManager:SetStatus("Copied UUID to clipboard!", THEME.Success, self.StatusLabel)
+            self.StateManager:SetStatus("✅ Copied UUID to clipboard!", THEME.Success, self.StatusLabel)
             task.delay(1, function()
                 if UUIDDisplay and UUIDDisplay.Parent then
                     UUIDDisplay.Text = originalText
@@ -933,7 +934,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
                 end
             end)
         else
-            self.StateManager:SetStatus("Executor doesn't support clipboard", THEME.Warning, self.StatusLabel)
+            self.StateManager:SetStatus("⚠️ Executor doesn't support clipboard", THEME.Warning, self.StatusLabel)
         end
     end)
     
@@ -942,7 +943,7 @@ function DupeTab:CreatePetCard(petData, EquippedUUIDs, allData)
             self.TooltipRef.Text = " UUID: " .. uuid .. " "
             self.TooltipRef.Visible = true
             if UUIDDisplay:FindFirstChild("UIStroke") then
-                UUIDDisplay.UIStroke.Color = THEME.AccentBlue
+                UUIDDisplay.UIStroke.Color = THEME.AccentPurple
             end
         end
     end)
@@ -961,7 +962,7 @@ function DupeTab:OnDeletePets()
     local THEME = self.Config.THEME
     
     if self.Utils.IsTradeActive() then
-        self.StateManager:SetStatus("Close Trade first!", THEME.Fail, self.StatusLabel)
+        self.StateManager:SetStatus("🔒 Close Trade first!", THEME.Fail, self.StatusLabel)
         return
     end
     
@@ -1034,13 +1035,13 @@ function DupeTab:UpdateEvoButtonState()
         end
         
         if not allSameName then
-            btnText = "NAME MISMATCH"
+            btnText = "❌ NAME MISMATCH"
         elseif not allSameEvo then
-            btnText = "EVO MISMATCH"
+            btnText = "❌ EVO MISMATCH"
         elseif not notMaxLevel then
-            btnText = "MAX LEVEL"
+            btnText = "🚫 MAX LEVEL"
         else
-            btnText = "EVOLVE NOW"
+            btnText = "🧬 EVOLVE NOW"
             isValid = true
         end
     end
@@ -1056,7 +1057,7 @@ function DupeTab:UpdateEvoButtonState()
         self.FloatingButtons.BtnEvoPet.TextColor3 = THEME.TextWhite
         
         if self.FloatingButtons.BtnEvoPet:FindFirstChild("UIStroke") then
-            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.AccentBlue
+            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.AccentPurple
             self.FloatingButtons.BtnEvoPet.UIStroke.Thickness = 1.5
             self.FloatingButtons.BtnEvoPet.UIStroke.Transparency = 0.4
         end
@@ -1065,10 +1066,10 @@ function DupeTab:UpdateEvoButtonState()
         self.FloatingButtons.BtnEvoPet.BackgroundColor3 = THEME.CardBg
         self.FloatingButtons.BtnEvoPet.AutoButtonColor = false
         self.FloatingButtons.BtnEvoPet.TextTransparency = 0.5
-        self.FloatingButtons.BtnEvoPet.TextColor3 = THEME.TextDisabled
+        self.FloatingButtons.BtnEvoPet.TextColor3 = Color3.fromRGB(150, 150, 150)
         
         if self.FloatingButtons.BtnEvoPet:FindFirstChild("UIStroke") then
-            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.GlassStroke -- เทา
+            self.FloatingButtons.BtnEvoPet.UIStroke.Color = Color3.fromRGB(80, 80, 80) -- เทา
             self.FloatingButtons.BtnEvoPet.UIStroke.Thickness = 1
             self.FloatingButtons.BtnEvoPet.UIStroke.Transparency = 0.7
         end
@@ -1111,7 +1112,7 @@ function DupeTab:ShowQuantityPopup(itemData, onConfirm)
     popupBox.BorderSizePixel = 0
     
     self.UIFactory.AddCorner(popupBox, 10)
-    self.UIFactory.AddStroke(popupBox, THEME.AccentBlue, 2, 0)
+    self.UIFactory.AddStroke(popupBox, THEME.AccentPurple, 2, 0)
     
     local titleLabel = self.UIFactory.CreateLabel({
         Parent = popupBox,
@@ -1127,7 +1128,7 @@ function DupeTab:ShowQuantityPopup(itemData, onConfirm)
     input.Size = UDim2.new(0.85, 0, 0, 34)
     input.Position = UDim2.new(0.075, 0, 0.35, 0)
     input.Text = tostring(itemData.Default or 1)
-    input.BackgroundColor3 = THEME.CardBg
+    input.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
     input.TextColor3 = THEME.TextWhite
     input.Font = Enum.Font.Code
     input.TextSize = 15
@@ -1155,7 +1156,7 @@ function DupeTab:ShowQuantityPopup(itemData, onConfirm)
         Size = UDim2.new(0.85, 0, 0, 34),
         Position = UDim2.new(0.075, 0, 0.7, 0),
         Text = "CONFIRM",
-        BgColor = THEME.AccentBlue,
+        BgColor = THEME.AccentPurple,
         CornerRadius = 6,
         Parent = popupBox
     })
