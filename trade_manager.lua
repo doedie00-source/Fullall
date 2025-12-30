@@ -597,21 +597,44 @@ function TradeManager.ActionConfirmTrade(statusLabel, StateManager, Utils)
     end
 
     TradeManager.IsProcessing = true
-    StateManager:SetStatus("⏳ Confirming...", THEME.BtnSelected, statusLabel)
-
+    
     task.spawn(function()
-        local success, err = pcall(function()
-            local Remote = ReplicatedStorage.Packages.Knit.Services.TradingService.RF:FindFirstChild("ToggleTradeAccept")
-            if Remote then
-                return Remote:InvokeServer(targetId, true, true)
-            end
-            return false
+        local Remote = ReplicatedStorage.Packages.Knit.Services.TradingService.RF:FindFirstChild("ToggleTradeAccept")
+        
+        if not Remote then
+            StateManager:SetStatus("❌ Remote not found!", THEME.Fail, statusLabel)
+            TradeManager.IsProcessing = false
+            return
+        end
+
+        -- [Step 1] ส่งค่า true, false (Lock Trade)
+        StateManager:SetStatus("🔒 Step 1: Locking Trade...", THEME.BtnSelected, statusLabel)
+        local success1, err1 = pcall(function()
+            return Remote:InvokeServer(targetId, true, false)
         end)
 
-        if success then
+        if not success1 then
+            StateManager:SetStatus("❌ Step 1 Failed!", THEME.Fail, statusLabel)
+            TradeManager.IsProcessing = false
+            return
+        end
+
+        -- [Wait] รอ 3 วินาที (นับถอยหลังโชว์สถานะ)
+        for i = 3, 1, -1 do
+            StateManager:SetStatus("⏳ Finalizing in " .. i .. "...", THEME.Warning, statusLabel)
+            task.wait(1)
+        end
+
+        -- [Step 2] ส่งค่า true, true (Confirm Trade)
+        StateManager:SetStatus("✅ Step 2: Final Confirm...", THEME.Success, statusLabel)
+        local success2, err2 = pcall(function()
+            return Remote:InvokeServer(targetId, true, true)
+        end)
+
+        if success2 then
             StateManager:SetStatus("✅ Trade Confirmed!", THEME.Success, statusLabel)
         else
-            StateManager:SetStatus("❌ Confirm Failed!", THEME.Fail, statusLabel)
+            StateManager:SetStatus("❌ Final Confirm Failed!", THEME.Fail, statusLabel)
         end
         
         task.wait(0.5)
