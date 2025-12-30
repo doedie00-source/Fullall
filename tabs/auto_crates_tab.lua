@@ -709,7 +709,6 @@ function AutoCratesTab:StartAutoOpen()
     
     local THEME = self.Config.THEME
     
-    -- [[ UPDATED ]] ปุ่ม STOP: Text ขาว, ขอบแดง
     self.AutoOpenBtn.Text = "STOP OPEN"
     self.AutoOpenBtn.TextColor3 = THEME.TextWhite
     self.AutoOpenBtn.BackgroundColor3 = THEME.CardBg
@@ -719,19 +718,17 @@ function AutoCratesTab:StartAutoOpen()
         self.AutoOpenBtnStroke.Transparency = 0.4
     end
     
+    -- [[ เพิ่มตรงนี้ ]] ล้างข้อความมุมขวาล่างออก เพื่อความสะอาด
+    if self.InfoLabel then
+        self.InfoLabel.Text = "" 
+    end
+    
     if self.LockOverlay then
         self.LockOverlay.Visible = true
-        
-        -- [[ UPDATED ]] อัปเดตข้อความใน Lock Screen ให้บอกสถานะ Auto Delete ที่นี่
+        -- ข้อความเริ่มต้น
         if self.LockLabel then
-            local delStatus = self.AutoDeleteEnabled and "ON" or "OFF"
-            self.LockLabel.Text = string.format("[LOCKED]\nProcessing crates...\n(Auto Delete: %s)", delStatus)
-            
-            if self.AutoDeleteEnabled then
-                self.LockLabel.TextColor3 = THEME.Warning
-            else
-                self.LockLabel.TextColor3 = THEME.TextWhite
-            end
+             self.LockLabel.Text = "[STARTING]\nPreparing to open..."
+             self.LockLabel.TextColor3 = THEME.TextWhite
         end
     end
     
@@ -837,15 +834,27 @@ function AutoCratesTab:ProcessCrateOpening(selectedList)
                     cardData.Input.Text = tostring(remainingAmount)
                 end
                 
-                if self.InfoLabel then
-                    self.InfoLabel.Text = string.format(
-                        "[PROGRESS] Opened: %d | %s: %d/%d (Left: %d)",
-                        totalOpened,
-                        crateName,
-                        opened,
-                        targetAmount,
-                        remainingAmount
+                if self.LockLabel then
+                    local delStatus = self.AutoDeleteEnabled and "ON" or "OFF"
+                    
+                    self.LockLabel.Text = string.format(
+                        "[OPENING] %s\n\n" ..
+                        "Progress: %d / %d\n" ..
+                        "Total Opened: %d\n\n" ..
+                        "(Auto Delete: %s)",
+                        crateName,          -- ชื่อกล่อง
+                        opened,             -- เปิดไปแล้วของกล่องนี้
+                        targetAmount,       -- เป้าหมายของกล่องนี้
+                        totalOpened,        -- ยอดรวมทั้งหมด
+                        delStatus           -- สถานะลบของ
                     )
+                    
+                    -- เปลี่ยนสีตัวอักษรถ้าเปิด Auto Delete ให้เด่นหน่อย
+                    if self.AutoDeleteEnabled then
+                        self.LockLabel.TextColor3 = THEME.Warning
+                    else
+                        self.LockLabel.TextColor3 = THEME.TextWhite
+                    end
                 end
                 
                 local randomWait = math.random(100, 220) / 100 
