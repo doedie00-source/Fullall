@@ -27,55 +27,58 @@ local CONFIG = {
 
 -- ⚡ Blue-White Professional Theme (Keep Red/Green for Status)
 local THEME = {
-    -- Base Colors (Blue-Black)
-    MainBg = Color3.fromRGB(12, 18, 28),            -- Dark Blue-Black
-    MainTransparency = 0.05,
-    PanelBg = Color3.fromRGB(18, 24, 35),           -- Dark Blue Panel
-    PanelTransparency = 0.2,
+    -- Base Colors (เปลี่ยนจากน้ำเงิน เป็นดำเทาด้านๆ)
+    MainBg = Color3.fromRGB(25, 25, 25),            -- ดำเทา (พื้นหลังหลัก)
+    MainTransparency = 0,                           -- ปรับเป็น 0 (ทึบ) จะได้ไม่ดูจางเหมือนปิดอยู่
     
-    -- Glass Effect (Blue)
-    GlassBg = Color3.fromRGB(20, 28, 40),           -- Blue Glass
-    GlassTransparency = 0.1,
-    GlassStroke = Color3.fromRGB(40, 60, 90),       -- Blue Border
+    PanelBg = Color3.fromRGB(35, 35, 35),           -- เทาเข้ม
+    PanelTransparency = 0,                          -- ปรับทึบ
     
-    -- Text (White-Blue)
-    TextWhite = Color3.fromRGB(248, 250, 255),      -- Pure White
-    TextGray = Color3.fromRGB(160, 175, 195),       -- Light Blue-Grey
-    TextDim = Color3.fromRGB(115, 130, 150),        -- Dim Blue-Grey
+    -- Glass/Containers (ลดความเป็นกระจกสีน้ำเงินลง)
+    GlassBg = Color3.fromRGB(40, 40, 40),           -- เทา (พื้นหลังรอง)
+    GlassTransparency = 0,                          -- ปรับทึบให้ดูชัด
+    GlassStroke = Color3.fromRGB(80, 80, 80),       -- เส้นขอบสีเทา (ไม่เอาน้ำเงินแล้ว)
     
-    -- Buttons (Blue-White Gradient)
-    BtnDefault = Color3.fromRGB(28, 38, 55),        -- Dark Blue Button
-    BtnHover = Color3.fromRGB(35, 50, 70),          -- Hover Blue
-    BtnSelected = Color3.fromRGB(45, 85, 155),      -- Selected Blue
-    BtnMainTab = Color3.fromRGB(22, 32, 48),        -- Tab Button
-    BtnMainTabSelected = Color3.fromRGB(45, 85, 155), -- Selected Tab
-    BtnDupe = Color3.fromRGB(50, 95, 165),          -- Dupe Blue
-    BtnDisabled = Color3.fromRGB(22, 28, 38),       -- Disabled Dark
-    TextDisabled = Color3.fromRGB(80, 90, 105),     -- Disabled Text
+    -- Text (ขาวชัดเจน)
+    TextWhite = Color3.fromRGB(255, 255, 255),      -- ขาวจั๊วะ
+    TextGray = Color3.fromRGB(200, 200, 200),       -- เทาสว่าง
+    TextDim = Color3.fromRGB(150, 150, 150),        -- เทาหม่น
     
-    -- Status Colors (Keep Red/Green for Important Status!)
-    Success = Color3.fromRGB(60, 110, 180),         -- Blue Success
-    Fail = Color3.fromRGB(220, 75, 75),             -- RED (Keep for errors!)
-    Warning = Color3.fromRGB(240, 180, 50),         -- Yellow Warning
-    Info = Color3.fromRGB(60, 105, 175),            -- Info Blue
+    -- Buttons (ปุ่มปกติเป็นสีเทา ปุ่มกดแล้วค่อยเป็นสีฟ้า)
+    BtnDefault = Color3.fromRGB(50, 50, 50),        -- ปุ่มสีเทาเข้ม
+    BtnHover = Color3.fromRGB(70, 70, 70),          -- เมาส์ชี้แล้วสว่างขึ้น
+    BtnSelected = Color3.fromRGB(60, 60, 60),       -- ปุ่มที่ถูกเลือก
     
-    -- Special (Keep Green/Red for Equipment Status)
-    ItemInv = Color3.fromRGB(65, 180, 130),         -- GREEN (Has item)
-    ItemEquip = Color3.fromRGB(220, 75, 75),        -- RED (Equipped/Locked)
-    PlayerBtn = Color3.fromRGB(55, 110, 185),       -- Player Blue
-    DupeReady = Color3.fromRGB(65, 180, 130),       -- GREEN (Ready)
+    BtnMainTab = Color3.fromRGB(40, 40, 40),        -- ปุ่ม Tab สีเทา
+    BtnMainTabSelected = Color3.fromRGB(60, 120, 200), -- Tab ที่เลือก (ให้มีสีฟ้าหน่อยจะได้รู้ว่าอยู่หน้าไหน)
     
-    -- Cards (Blue)
-    CardBg = Color3.fromRGB(20, 30, 45),            -- Card Background
-    CardStrokeSelected = Color3.fromRGB(220, 240, 255), -- ⚪🔵 WHITE-BLUE Border (Selected!)
-    CardStrokeLocked = Color3.fromRGB(220, 75, 75),    -- RED Border (Locked!)
-    CrateSelected = Color3.fromRGB(220, 240, 255),      -- ⚪🔵 WHITE-BLUE (Selected crate border)
+    BtnDupe = Color3.fromRGB(60, 120, 200),         -- ปุ่ม Dupe สีฟ้า
+    BtnDisabled = Color3.fromRGB(30, 30, 30),       -- ปุ่มที่กดไม่ได้ (สีมืดๆ)
+    TextDisabled = Color3.fromRGB(100, 100, 100),   
     
-    -- Accent Colors (Blue-White Palette)
-    StarColor = Color3.fromRGB(255, 220, 100),      -- Gold Star
-    AccentPurple = Color3.fromRGB(50, 90, 165),     -- Deep Blue
-    AccentBlue = Color3.fromRGB(55, 110, 185),      -- Bright Blue
-    AccentGreen = Color3.fromRGB(65, 180, 130),     -- GREEN (Keep!)
+    -- Status Colors (คงเดิมเพราะเป็นสีมาตรฐาน)
+    Success = Color3.fromRGB(80, 200, 120),         -- เขียว
+    Fail = Color3.fromRGB(240, 80, 80),             -- แดง
+    Warning = Color3.fromRGB(240, 200, 60),         -- เหลือง
+    Info = Color3.fromRGB(100, 180, 255),           -- ฟ้าข้อมูล
+    
+    -- Item Status
+    ItemInv = Color3.fromRGB(80, 200, 120),         -- เขียว (มีของ)
+    ItemEquip = Color3.fromRGB(240, 80, 80),        -- แดง (ใส่อยู่)
+    PlayerBtn = Color3.fromRGB(60, 60, 60),         -- ปุ่มผู้เล่นสีเทา
+    DupeReady = Color3.fromRGB(80, 200, 120),       -- เขียว (พร้อม)
+    
+    -- Cards (ตัวสำคัญ! เปลี่ยนเป็นสีเทาทึบ ของจะได้ดูเด่น)
+    CardBg = Color3.fromRGB(45, 45, 45),            -- พื้นหลังการ์ดสีเทา (ไม่ใช่สีน้ำเงินจางๆ)
+    CardStrokeSelected = Color3.fromRGB(255, 255, 255), -- ขอบสีขาวเวลาเลือก
+    CardStrokeLocked = Color3.fromRGB(240, 80, 80),    -- ขอบแดงเวลาล็อค
+    CrateSelected = Color3.fromRGB(255, 255, 255),
+    
+    -- Accent Colors
+    StarColor = Color3.fromRGB(255, 220, 100),
+    AccentPurple = Color3.fromRGB(160, 100, 220),
+    AccentBlue = Color3.fromRGB(60, 120, 200),      -- ฟ้ามาตรฐาน (ไม่เข้มจนมืด)
+    AccentGreen = Color3.fromRGB(80, 200, 120),
 }
 
 local DUPE_RECIPES = {
