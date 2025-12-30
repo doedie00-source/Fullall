@@ -183,7 +183,7 @@ function GUI:CreateTitleBar()
     self.UIFactory.CreateButton({
         Size = UDim2.new(0, 30, 0, 30),
         Position = UDim2.new(1, -34, 0, 4),
-        Text = "×",
+        Text = "X",
         BgColor = Color3.fromRGB(255, 60, 60),
         TextColor = THEME.TextWhite,
         TextSize = 18,
@@ -290,7 +290,7 @@ function GUI:SwitchTab(tabName)
     if tabName == "Players" and self.Utils.IsTradeActive() then
         tabName = "Inventory"
         if self.StatusLabel then
-            self.StateManager:SetStatus("TRADE ACTIVE - REDIRECTED TO INVENTORY", THEME.Warning, self.StatusLabel)
+            self.StateManager:SetStatus("TRADE ACTIVE", THEME.Warning, self.StatusLabel)
         end
     end
     
