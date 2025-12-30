@@ -25,57 +25,57 @@ local CONFIG = {
     TOGGLE_KEY = Enum.KeyCode.T,
 }
 
--- 🌊 Dark Blue Professional Theme (Navy + Slate)
+-- ⚡ Blue-White Professional Theme (Keep Red/Green for Status)
 local THEME = {
-    -- Base Colors (Dark Blue-Black)
-    MainBg = Color3.fromRGB(10, 15, 25),            -- Very Dark Navy
+    -- Base Colors (Blue-Black)
+    MainBg = Color3.fromRGB(12, 18, 28),            -- Dark Blue-Black
     MainTransparency = 0.05,
-    PanelBg = Color3.fromRGB(15, 20, 32),           -- Dark Navy Panel
+    PanelBg = Color3.fromRGB(18, 24, 35),           -- Dark Blue Panel
     PanelTransparency = 0.2,
     
-    -- Glass Effect (Navy Blue)
-    GlassBg = Color3.fromRGB(18, 25, 38),           -- Navy Glass
+    -- Glass Effect (Blue)
+    GlassBg = Color3.fromRGB(20, 28, 40),           -- Blue Glass
     GlassTransparency = 0.1,
-    GlassStroke = Color3.fromRGB(35, 55, 85),       -- Blue-Grey Border
+    GlassStroke = Color3.fromRGB(40, 60, 90),       -- Blue Border
     
-    -- Text (Professional)
-    TextWhite = Color3.fromRGB(245, 248, 255),      -- Soft White
-    TextGray = Color3.fromRGB(155, 165, 180),       -- Cool Grey
-    TextDim = Color3.fromRGB(110, 120, 135),        -- Dim Grey
+    -- Text (White-Blue)
+    TextWhite = Color3.fromRGB(248, 250, 255),      -- Pure White
+    TextGray = Color3.fromRGB(160, 175, 195),       -- Light Blue-Grey
+    TextDim = Color3.fromRGB(115, 130, 150),        -- Dim Blue-Grey
     
-    -- Buttons (Navy Gradient)
-    BtnDefault = Color3.fromRGB(25, 35, 50),        -- Dark Navy Button
-    BtnHover = Color3.fromRGB(30, 45, 65),          -- Hover Navy
-    BtnSelected = Color3.fromRGB(35, 75, 140),      -- Deep Blue (Selected)
-    BtnMainTab = Color3.fromRGB(20, 30, 45),        -- Tab Button
-    BtnMainTabSelected = Color3.fromRGB(35, 75, 140), -- Selected Tab
-    BtnDupe = Color3.fromRGB(40, 85, 150),          -- Dupe Blue
-    BtnDisabled = Color3.fromRGB(20, 25, 35),       -- Disabled Dark
-    TextDisabled = Color3.fromRGB(75, 80, 90),      -- Disabled Text
+    -- Buttons (Blue-White Gradient)
+    BtnDefault = Color3.fromRGB(28, 38, 55),        -- Dark Blue Button
+    BtnHover = Color3.fromRGB(35, 50, 70),          -- Hover Blue
+    BtnSelected = Color3.fromRGB(45, 85, 155),      -- Selected Blue
+    BtnMainTab = Color3.fromRGB(22, 32, 48),        -- Tab Button
+    BtnMainTabSelected = Color3.fromRGB(45, 85, 155), -- Selected Tab
+    BtnDupe = Color3.fromRGB(50, 95, 165),          -- Dupe Blue
+    BtnDisabled = Color3.fromRGB(22, 28, 38),       -- Disabled Dark
+    TextDisabled = Color3.fromRGB(80, 90, 105),     -- Disabled Text
     
-    -- Status Colors (Blue Tones Only)
-    Success = Color3.fromRGB(45, 100, 180),         -- Bright Blue (Success)
-    Fail = Color3.fromRGB(65, 85, 120),             -- Muted Blue-Grey (Fail)
-    Warning = Color3.fromRGB(85, 120, 180),         -- Light Blue (Warning)
-    Info = Color3.fromRGB(55, 95, 160),             -- Info Blue
+    -- Status Colors (Keep Red/Green for Important Status!)
+    Success = Color3.fromRGB(60, 110, 180),         -- Blue Success
+    Fail = Color3.fromRGB(220, 75, 75),             -- RED (Keep for errors!)
+    Warning = Color3.fromRGB(240, 180, 50),         -- Yellow Warning
+    Info = Color3.fromRGB(60, 105, 175),            -- Info Blue
     
-    -- Special (Blue Variations)
-    ItemInv = Color3.fromRGB(50, 110, 190),         -- Bright Item Blue
-    ItemEquip = Color3.fromRGB(60, 90, 135),        -- Equipped Blue
-    PlayerBtn = Color3.fromRGB(45, 100, 180),       -- Player Blue
-    DupeReady = Color3.fromRGB(55, 115, 200),       -- Ready Blue
+    -- Special (Keep Green/Red for Equipment Status)
+    ItemInv = Color3.fromRGB(65, 180, 130),         -- GREEN (Has item)
+    ItemEquip = Color3.fromRGB(220, 75, 75),        -- RED (Equipped/Locked)
+    PlayerBtn = Color3.fromRGB(55, 110, 185),       -- Player Blue
+    DupeReady = Color3.fromRGB(65, 180, 130),       -- GREEN (Ready)
     
-    -- Cards (Dark Navy)
-    CardBg = Color3.fromRGB(18, 28, 42),            -- Card Background
-    CardStrokeSelected = Color3.fromRGB(45, 100, 180), -- Selected Border
-    CardStrokeLocked = Color3.fromRGB(65, 85, 120),    -- Locked Border
-    CrateSelected = Color3.fromRGB(50, 110, 190),      -- Selected Crate
+    -- Cards (Blue)
+    CardBg = Color3.fromRGB(20, 30, 45),            -- Card Background
+    CardStrokeSelected = Color3.fromRGB(55, 110, 185), -- Blue Border
+    CardStrokeLocked = Color3.fromRGB(220, 75, 75),    -- RED Border (Locked!)
+    CrateSelected = Color3.fromRGB(65, 180, 130),      -- GREEN (Selected)
     
-    -- Accent Colors (Professional Blue Palette)
-    StarColor = Color3.fromRGB(180, 200, 255),      -- Cool Star Blue
-    AccentPurple = Color3.fromRGB(45, 85, 155),     -- Deep Blue (was purple)
-    AccentBlue = Color3.fromRGB(50, 105, 185),      -- Bright Blue
-    AccentGreen = Color3.fromRGB(55, 115, 175),     -- Blue-Teal (was green)
+    -- Accent Colors (Blue-White Palette)
+    StarColor = Color3.fromRGB(255, 220, 100),      -- Gold Star
+    AccentPurple = Color3.fromRGB(50, 90, 165),     -- Deep Blue
+    AccentBlue = Color3.fromRGB(55, 110, 185),      -- Bright Blue
+    AccentGreen = Color3.fromRGB(65, 180, 130),     -- GREEN (Keep!)
 }
 
 local DUPE_RECIPES = {
