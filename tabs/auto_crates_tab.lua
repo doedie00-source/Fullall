@@ -274,7 +274,7 @@ function AutoCratesTab:UpdateAccessoryStatus()
     elseif space <= 50 then
         color = THEME.Warning
     else
-        color = THEME.AccentGreen
+        color = THEME.AccentBlue
     end
     
     self.AccessoryStatusLabel.Text = string.format(
@@ -295,8 +295,8 @@ function AutoCratesTab:ToggleAutoDelete()
     
     if self.AutoDeleteEnabled then
         self.AutoDeleteBtn.Text = "🗑️ AUTO DELETE: ON"
-        self.AutoDeleteBtn.TextColor3 = THEME.AccentGreen
-        self.AutoDeleteBtnStroke.Color = THEME.AccentGreen
+        self.AutoDeleteBtn.TextColor3 = THEME.AccentBlue
+        self.AutoDeleteBtnStroke.Color = THEME.AccentBlue
         self.StateManager:SetStatus("✅ Auto Delete Enabled", THEME.Success, self.StatusLabel)
     else
         self.AutoDeleteBtn.Text = "🗑️ AUTO DELETE: OFF"
@@ -422,20 +422,20 @@ function AutoCratesTab:CreateCrateCard(crate)
     
     local Stroke = Instance.new("UIStroke", Card)
     Stroke.Thickness = isSelected and 2 or 1
-    Stroke.Color = isSelected and THEME.AccentGreen or THEME.GlassStroke
+    Stroke.Color = isSelected and THEME.AccentBlue or THEME.GlassStroke
     Stroke.Transparency = 0.5
     
     local CheckBox = Instance.new("Frame", Card)
     CheckBox.Size = UDim2.new(0, 16, 0, 16)
     CheckBox.Position = UDim2.new(0, 4, 0, 4)
-    CheckBox.BackgroundColor3 = isSelected and THEME.AccentGreen or Color3.fromRGB(30, 30, 35)
+    CheckBox.BackgroundColor3 = isSelected and THEME.AccentBlue or Color3.fromRGB(30, 30, 35)
     CheckBox.BorderSizePixel = 0
     CheckBox.ZIndex = 15
     
     self.UIFactory.AddCorner(CheckBox, 4)
     
     local cbStroke = Instance.new("UIStroke", CheckBox)
-    cbStroke.Color = isSelected and THEME.AccentGreen or THEME.GlassStroke
+    cbStroke.Color = isSelected and THEME.AccentBlue or THEME.GlassStroke
     cbStroke.Thickness = 1
     cbStroke.Transparency = 0.5
     
@@ -529,11 +529,11 @@ function AutoCratesTab:CreateCrateCard(crate)
             cbStroke.Color = THEME.GlassStroke
         else
             self.SelectedCrates[crate.Name] = amount
-            Stroke.Color = THEME.AccentGreen
+            Stroke.Color = THEME.AccentBlue
             Stroke.Thickness = 2
-            CheckBox.BackgroundColor3 = THEME.AccentGreen
+            CheckBox.BackgroundColor3 = THEME.AccentBlue
             CheckMark.Text = "✓"
-            cbStroke.Color = THEME.AccentGreen
+            cbStroke.Color = THEME.AccentBlue
         end
         
         self:UpdateInfoLabel()
@@ -642,11 +642,11 @@ function AutoCratesTab:SelectAll()
         local amount = tonumber(data.Input.Text) or data.DefaultAmount
         if amount > 0 and amount <= data.MaxAmount then
             self.SelectedCrates[crateName] = amount
-            data.Stroke.Color = self.Config.THEME.AccentGreen
+            data.Stroke.Color = self.Config.THEME.AccentBlue
             data.Stroke.Thickness = 2
-            data.CheckBox.BackgroundColor3 = self.Config.THEME.AccentGreen
+            data.CheckBox.BackgroundColor3 = self.Config.THEME.AccentBlue
             data.CheckMark.Text = "✓"
-            data.CheckBoxStroke.Color = self.Config.THEME.AccentGreen
+            data.CheckBoxStroke.Color = self.Config.THEME.AccentBlue
         end
     end
     self:UpdateInfoLabel()
@@ -678,7 +678,7 @@ function AutoCratesTab:UpdateInfoLabel()
     
     if count > 0 then
         self.InfoLabel.Text = string.format("📦 Selected: %d types | Total: %d crates", count, total)
-        self.InfoLabel.TextColor3 = self.Config.THEME.AccentGreen
+        self.InfoLabel.TextColor3 = self.Config.THEME.AccentBlue
     else
         self.InfoLabel.Text = ""
     end
