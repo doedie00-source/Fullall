@@ -114,7 +114,7 @@ function AutoCratesTab:Init(parent)
     padding.PaddingTop = UDim.new(0, 8)
     padding.PaddingLeft = UDim.new(0, 4)
     padding.PaddingRight = UDim.new(0, 4)
-    padding.PaddingBottom = UDim.new(0, 12)
+    padding.PaddingBottom = UDim.new(0, 60)
     
     local layout = self.Container:FindFirstChild("UIGridLayout") or Instance.new("UIGridLayout", self.Container)
     layout.CellSize = UDim2.new(0, 90, 0, 100)
@@ -139,7 +139,7 @@ function AutoCratesTab:Init(parent)
     self.LockOverlay.ZIndex = 1000
     self.LockOverlay.Visible = false
     
-    local lockLabel = self.UIFactory.CreateLabel({
+    self.LockLabel = self.UIFactory.CreateLabel({
         Parent = self.LockOverlay,
         Text = "[LOCKED]\nProcessing crates...",
         Size = UDim2.new(1, 0, 1, 0),
@@ -148,8 +148,8 @@ function AutoCratesTab:Init(parent)
         TextSize = 16,
         Font = Enum.Font.GothamBold
     })
-    lockLabel.ZIndex = 1001
-    lockLabel.TextWrapped = true
+    self.LockLabel.ZIndex = 1001
+    self.LockLabel.TextWrapped = true
     
     task.spawn(function()
         while self.Container and self.Container.Parent do
@@ -167,46 +167,52 @@ function AutoCratesTab:CreateFloatingButtons(parent)
     local btnHeight = 32
     local startX = -8
     
+    -- 1. Select All Button
     self.SelectAllBtn = self.UIFactory.CreateButton({
         Size = UDim2.new(0, btnWidth, 0, btnHeight),
         Position = UDim2.new(1, startX - btnWidth, 1, -38),
         Text = "SELECT ALL",
         BgColor = THEME.CardBg,
-        TextColor = THEME.TextWhite,
+        TextColor = THEME.TextWhite, -- Text สีขาวเสมอ
         TextSize = 12,
         Font = Enum.Font.GothamBold,
         Parent = parent,
         OnClick = function() self:ToggleSelectAll() end
     })
     self.SelectAllBtn.ZIndex = 101
+    -- เริ่มต้นเป็น Blue (เชิญชวนให้กด Select)
     self.SelectAllBtnStroke = self.UIFactory.AddStroke(self.SelectAllBtn, THEME.AccentBlue, 1.5, 0.4)
     
+    -- 2. Auto Open Button
     self.AutoOpenBtn = self.UIFactory.CreateButton({
         Size = UDim2.new(0, btnWidth + 10, 0, btnHeight),
         Position = UDim2.new(1, startX - btnWidth*2 - spacing - 10, 1, -38),
         Text = "START OPEN",
         BgColor = THEME.CardBg,
-        TextColor = THEME.TextWhite,
+        TextColor = THEME.TextWhite, -- Text สีขาวเสมอ
         TextSize = 12,
         Font = Enum.Font.GothamBold,
         Parent = parent,
         OnClick = function() self:ToggleAutoOpen() end
     })
     self.AutoOpenBtn.ZIndex = 101
+    -- เริ่มต้นเป็น Blue (Start)
     self.AutoOpenBtnStroke = self.UIFactory.AddStroke(self.AutoOpenBtn, THEME.AccentBlue, 1.5, 0.4)
     
+    -- 3. Auto Delete Button
     self.AutoDeleteBtn = self.UIFactory.CreateButton({
         Size = UDim2.new(0, btnWidth + 20, 0, btnHeight),
         Position = UDim2.new(1, startX - btnWidth*3 - spacing*2 - 30, 1, -38),
         Text = "AUTO DELETE: OFF",
         BgColor = THEME.CardBg,
-        TextColor = THEME.TextWhite,
+        TextColor = THEME.TextWhite, -- Text สีขาวเสมอ
         TextSize = 11,
         Font = Enum.Font.GothamBold,
         Parent = parent,
         OnClick = function() self:ToggleAutoDelete() end
     })
     self.AutoDeleteBtn.ZIndex = 101
+    -- เริ่มต้นเป็น Red (เพราะสถานะคือ OFF)
     self.AutoDeleteBtnStroke = self.UIFactory.AddStroke(self.AutoDeleteBtn, THEME.Fail, 1.5, 0.4)
 end
 
@@ -281,18 +287,16 @@ function AutoCratesTab:ToggleAutoDelete()
     self.AutoDeleteEnabled = not self.AutoDeleteEnabled
     local THEME = self.Config.THEME
     
+    self.AutoDeleteBtn.TextColor3 = THEME.TextWhite 
+    
     if self.AutoDeleteEnabled then
         self.AutoDeleteBtn.Text = "AUTO DELETE: ON"
-        self.AutoDeleteBtn.TextColor3 = THEME.TextWhite
         self.AutoDeleteBtnStroke.Color = THEME.AccentBlue
-        self.AutoDeleteBtnStroke.Transparency = 0.4
-        self.StateManager:SetStatus("[ON] Auto Delete Enabled", THEME.Success, self.StatusLabel)
+        -- ลบ self.StateManager:SetStatus ออก เพื่อไม่ให้ล้นจอ
     else
         self.AutoDeleteBtn.Text = "AUTO DELETE: OFF"
-        self.AutoDeleteBtn.TextColor3 = THEME.TextWhite
         self.AutoDeleteBtnStroke.Color = THEME.Fail
-        self.AutoDeleteBtnStroke.Transparency = 0.4
-        self.StateManager:SetStatus("[OFF] Auto Delete Disabled", THEME.TextGray, self.StatusLabel)
+        -- ลบ self.StateManager:SetStatus ออก เพื่อไม่ให้ล้นจอ
     end
 end
 
@@ -588,24 +592,23 @@ function AutoCratesTab:UpdateSelectButton()
     local THEME = self.Config.THEME
     
     self.SelectAllBtn.BackgroundColor3 = THEME.CardBg
-    self.SelectAllBtn.TextColor3 = THEME.TextWhite
+    self.SelectAllBtn.TextColor3 = THEME.TextWhite -- Text สีขาวเสมอ
 
     if self:AreAllSelected() then
+        -- ถ้าเลือกหมดแล้ว ปุ่มทำหน้าที่ Unselect -> ใช้สีแดง (Fail)
         self.SelectAllBtn.Text = "UNSELECT ALL"
-        
         if self.SelectAllBtnStroke then
             self.SelectAllBtnStroke.Color = THEME.Fail
-            self.SelectAllBtnStroke.Transparency = 0.4
         end
     else
+        -- ถ้ายังเลือกไม่หมด ปุ่มทำหน้าที่ Select -> ใช้สีฟ้า (AccentBlue)
         self.SelectAllBtn.Text = "SELECT ALL"
-        
         if self.SelectAllBtnStroke then
             self.SelectAllBtnStroke.Color = THEME.AccentBlue
-            self.SelectAllBtnStroke.Transparency = 0.4
         end
     end
 
+    -- ปรับความจางเมื่อกำลังทำงาน
     if self.IsProcessing then
         self.SelectAllBtn.TextTransparency = 0.6
         if self.SelectAllBtnStroke then
@@ -613,6 +616,9 @@ function AutoCratesTab:UpdateSelectButton()
         end
     else
         self.SelectAllBtn.TextTransparency = 0
+        if self.SelectAllBtnStroke then
+            self.SelectAllBtnStroke.Transparency = 0.4
+        end
     end
 end
 
@@ -666,13 +672,13 @@ end
 function AutoCratesTab:ToggleAutoOpen()
     if self.IsProcessing then
         self.ShouldStop = true
+        -- สถานะกำลังหยุด
         self.AutoOpenBtn.Text = "STOPPING..."
         self.AutoOpenBtn.TextColor3 = self.Config.THEME.TextWhite
-        self.AutoOpenBtn.BackgroundColor3 = self.Config.THEME.CardBg
         
         if self.AutoOpenBtnStroke then
-            self.AutoOpenBtnStroke.Color = self.Config.THEME.Warning
-            self.AutoOpenBtnStroke.Transparency = 0.4
+            -- อาจจะใช้สีส้ม (Warning) หรือ แดง (Fail) ก็ได้ ตอนกำลังหยุด
+            self.AutoOpenBtnStroke.Color = self.Config.THEME.Fail 
         end
     else
         self:StartAutoOpen()
@@ -709,6 +715,19 @@ function AutoCratesTab:StartAutoOpen()
     
     if self.LockOverlay then
         self.LockOverlay.Visible = true
+        
+        -- อัปเดตข้อความใน Lock Screen ให้บอกสถานะ Auto Delete
+        if self.LockLabel then
+            local delStatus = self.AutoDeleteEnabled and "ON" or "OFF"
+            self.LockLabel.Text = string.format("[LOCKED]\nProcessing crates...\n(Auto Delete: %s)", delStatus)
+            
+            -- ถ้าเปิด Auto Delete ให้ข้อความดูเด่นขึ้นเล็กน้อย (Option)
+            if self.AutoDeleteEnabled then
+                self.LockLabel.TextColor3 = THEME.Warning -- หรือ THEME.TextWhite ก็ได้
+            else
+                self.LockLabel.TextColor3 = THEME.TextWhite
+            end
+        end
     end
     
     self.SelectAllBtn.TextTransparency = 0.6
@@ -900,12 +919,13 @@ function AutoCratesTab:ResetButton()
     self.ShouldStop = false
     local THEME = self.Config.THEME
     
+    -- กลับเป็นปุ่ม START -> Text ขาว, ขอบฟ้า (AccentBlue)
     self.AutoOpenBtn.Text = "START OPEN"
     self.AutoOpenBtn.TextColor3 = THEME.TextWhite
     self.AutoOpenBtn.BackgroundColor3 = THEME.CardBg
     
     if self.AutoOpenBtnStroke then
-        self.AutoOpenBtnStroke.Color = THEME.AccentBlue
+        self.AutoOpenBtnStroke.Color = THEME.AccentBlue -- สีฟ้าสำหรับปุ่มเริ่ม
         self.AutoOpenBtnStroke.Transparency = 0.4
     end
     
