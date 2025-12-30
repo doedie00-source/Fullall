@@ -1,5 +1,5 @@
 -- config.lua
--- Professional Cyber Blue Theme Configuration
+
 
 local CONFIG = {
     VERSION = "7.3",
