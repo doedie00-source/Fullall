@@ -70,7 +70,7 @@ function AutoCratesTab:Init(parent)
         Position = UDim2.new(0, 8, 0, 0),
         TextColor = THEME.TextWhite,
         TextSize = 14, -- ปรับขนาดเป็น 14
-        Font = Enum.Font.GothamBold, -- ใช้ GothamBold (หนาปกติ)
+        Font = Enum.Font.GothamBlack,
         TextXAlign = Enum.TextXAlignment.Left
     })
     
