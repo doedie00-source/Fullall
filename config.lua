@@ -1,5 +1,5 @@
 -- config.lua
-
+-- Professional Cyber Blue Theme Configuration
 
 local CONFIG = {
     VERSION = "7.3",
@@ -66,15 +66,9 @@ local THEME = {
     PlayerBtn = Color3.fromRGB(30, 40, 60),
     DupeReady = Color3.fromRGB(0, 255, 180),
     
-    CardBg = Color3.fromRGB(20, 28, 45),            -- ปกติ: น้ำเงินเข้ม
-    
-    -- ✅ [NEW] ชุดสีสำหรับไอเทมที่ถูกเลือก (Selected) --
-    -- โจทย์: "เทาๆ ดำๆ ทึบๆ ไม่มีเส้นขอบ"
-    CardBgSelected = Color3.fromRGB(12, 12, 14),    -- พื้นหลัง: ดำเกือบสนิท
-    CardTextSelected = Color3.fromRGB(180, 180, 180), -- ตัวหนังสือ: สีเทาควันบุหรี่
-    --------------------------------------------------
-
-    CardStrokeSelected = Color3.fromRGB(0, 160, 255), -- (เก็บไว้เผื่ออนาคตอยากใช้)
+    -- Cards (Cyber Style)
+    CardBg = Color3.fromRGB(20, 28, 45),            -- Card Background Dark Blue
+    CardStrokeSelected = Color3.fromRGB(0, 160, 255), -- Cyan Glow Border
     CardStrokeLocked = Color3.fromRGB(200, 50, 50),
     CrateSelected = Color3.fromRGB(0, 160, 255),
     
