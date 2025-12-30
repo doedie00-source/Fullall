@@ -74,7 +74,6 @@ local THEME = {
     
     -- Accent Colors
     StarColor = Color3.fromRGB(255, 215, 0),
-    AccentPurple = Color3.fromRGB(140, 80, 255),
     AccentBlue = Color3.fromRGB(0, 140, 255),       -- Primary Cyber Blue
     AccentGreen = Color3.fromRGB(0, 220, 140),
 }
