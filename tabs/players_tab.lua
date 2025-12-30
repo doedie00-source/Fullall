@@ -26,11 +26,17 @@ end
 function PlayersTab:Init(parent)
     local THEME = self.Config.THEME
     
-    -- Professional Header
-    local header = self.UIFactory.CreateLabel({
-        Parent = parent,
+    -- 1. สร้าง Header Container (เพื่อให้จัดปุ่มง่ายขึ้น)
+    local headerFrame = Instance.new("Frame", parent)
+    headerFrame.Name = "Header"
+    headerFrame.Size = UDim2.new(1, 0, 0, 42)
+    headerFrame.BackgroundTransparency = 1
+    
+    -- Title
+    self.UIFactory.CreateLabel({
+        Parent = headerFrame,
         Text = "  SERVER PLAYERS",
-        Size = UDim2.new(1, -8, 0, 28),
+        Size = UDim2.new(1, -8, 0, 24),
         Position = UDim2.new(0, 8, 0, 0),
         TextColor = THEME.TextWhite,
         TextSize = 14,
@@ -38,22 +44,70 @@ function PlayersTab:Init(parent)
         TextXAlign = Enum.TextXAlignment.Left
     })
     
-    local subHeader = self.UIFactory.CreateLabel({
-        Parent = parent,
+    -- Subtitle
+    self.UIFactory.CreateLabel({
+        Parent = headerFrame,
         Text = "Force trade with any player in the server",
         Size = UDim2.new(1, -8, 0, 14),
-        Position = UDim2.new(0, 8, 0, 28),
+        Position = UDim2.new(0, 8, 0, 22),
         TextColor = THEME.TextDim,
-        TextSize = 9,
+        TextSize = 10, -- ปรับให้เท่ากับหน้าอื่น
         Font = Enum.Font.Gotham,
         TextXAlign = Enum.TextXAlignment.Left
     })
     
-    -- Scrolling Frame
+    -- ==========================================
+    -- ✅ เพิ่มปุ่ม Trade Control (Confirm/Cancel)
+    -- ==========================================
+    local ctrlContainer = Instance.new("Frame", headerFrame)
+    ctrlContainer.Size = UDim2.new(0, 200, 0, 32)
+    ctrlContainer.Position = UDim2.new(1, -8, 0, 2)
+    ctrlContainer.AnchorPoint = Vector2.new(1, 0)
+    ctrlContainer.BackgroundTransparency = 1
+    
+    local ctrlLayout = Instance.new("UIListLayout", ctrlContainer)
+    ctrlLayout.FillDirection = Enum.FillDirection.Horizontal
+    ctrlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ctrlLayout.Padding = UDim.new(0, 8)
+
+    -- ปุ่ม Cancel
+    local btnCancel = self.UIFactory.CreateButton({
+        Parent = ctrlContainer,
+        Text = "CANCEL",
+        Size = UDim2.new(0, 80, 0, 28),
+        BgColor = THEME.CardBg,
+        TextColor = THEME.TextWhite,
+        TextSize = 11,
+        Font = Enum.Font.GothamBold,
+        CornerRadius = 6,
+        OnClick = function()
+            self.TradeManager.ActionCancelTrade(self.StatusLabel, self.StateManager, self.Utils)
+        end
+    })
+    self.UIFactory.AddStroke(btnCancel, THEME.Fail, 1.5, 0.4)
+
+    -- ปุ่ม Confirm
+    local btnConfirm = self.UIFactory.CreateButton({
+        Parent = ctrlContainer,
+        Text = "CONFIRM",
+        Size = UDim2.new(0, 80, 0, 28),
+        BgColor = THEME.CardBg,
+        TextColor = THEME.TextWhite,
+        TextSize = 11,
+        Font = Enum.Font.GothamBold,
+        CornerRadius = 6,
+        OnClick = function()
+            self.TradeManager.ActionConfirmTrade(self.StatusLabel, self.StateManager, self.Utils)
+        end
+    })
+    self.UIFactory.AddStroke(btnConfirm, THEME.AccentBlue, 1.5, 0.4)
+    -- ==========================================
+    
+    -- Scrolling Frame (ปรับตำแหน่งลงมาเล็กน้อยให้พอดีกับ Header ใหม่)
     self.Container = self.UIFactory.CreateScrollingFrame({
         Parent = parent,
         Size = UDim2.new(1, 0, 1, -48),
-        Position = UDim2.new(0, 0, 0, 46)
+        Position = UDim2.new(0, 0, 0, 48) -- ขยับลงมาที่ 48px
     })
     
     self:RefreshList()
