@@ -1,4 +1,3 @@
-ถูกครบมะ
 -- tabs/auto_crates_tab.lua
 -- Auto Open Crates Tab + Auto Delete Accessories
 
