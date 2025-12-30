@@ -46,7 +46,7 @@ function InventoryTab:Init(parent)
         Text = "💎 Hidden Treasures",
         Size = UDim2.new(1, -8, 0, 24),
         Position = UDim2.new(0, 8, 0, 0),
-        TextColor = THEME.AccentGreen,
+        TextColor = THEME.AccentCyan,
         TextSize = 15,
         Font = Enum.Font.GothamBold,
         TextXAlign = Enum.TextXAlignment.Left
