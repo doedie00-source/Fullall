@@ -318,7 +318,7 @@ function InventoryTab:CreateItemCard(item, playerData)
         Position = UDim2.new(0, 4, 1, (scrollText ~= "" and -45 or -30)),
         TextSize = 9,
         Font = Enum.Font.GothamBold,
-        TextColor = isInTrade and THEME.Success or THEME.TextWhite
+        TextColor = isInTrade and THEME.AccentCyan or THEME.TextWhite 
     })
     nameLbl.TextWrapped = true
     nameLbl.RichText = true
