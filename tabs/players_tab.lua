@@ -1,5 +1,5 @@
 -- tabs/players_tab.lua
--- Players Tab Module - Dark Blue Edition
+-- Professional Players Tab (No Emojis, Clean Design)
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -26,11 +26,11 @@ end
 function PlayersTab:Init(parent)
     local THEME = self.Config.THEME
     
-    -- Header
+    -- Professional Header
     local header = self.UIFactory.CreateLabel({
         Parent = parent,
         Text = "  SERVER PLAYERS",
-        Size = UDim2.new(1, -8, 0, 26),
+        Size = UDim2.new(1, -8, 0, 28),
         Position = UDim2.new(0, 8, 0, 0),
         TextColor = THEME.TextWhite,
         TextSize = 14,
@@ -42,7 +42,7 @@ function PlayersTab:Init(parent)
         Parent = parent,
         Text = "Force trade with any player in the server",
         Size = UDim2.new(1, -8, 0, 14),
-        Position = UDim2.new(0, 8, 0, 26),
+        Position = UDim2.new(0, 8, 0, 28),
         TextColor = THEME.TextDim,
         TextSize = 10,
         Font = Enum.Font.Gotham,
@@ -52,8 +52,8 @@ function PlayersTab:Init(parent)
     -- Scrolling Frame
     self.Container = self.UIFactory.CreateScrollingFrame({
         Parent = parent,
-        Size = UDim2.new(1, 0, 1, -46),
-        Position = UDim2.new(0, 0, 0, 44)
+        Size = UDim2.new(1, 0, 1, -48),
+        Position = UDim2.new(0, 0, 0, 46)
     })
     
     self:RefreshList()
@@ -80,32 +80,33 @@ function PlayersTab:RefreshList()
     
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer then
-            -- Card Frame
+            -- Professional Card Design
             local card = Instance.new("Frame", self.Container)
             card.Name = plr.Name
-            card.Size = UDim2.new(1, -16, 0, 56)
+            card.Size = UDim2.new(1, -16, 0, 60)
             card.BackgroundColor3 = THEME.CardBg
-            card.BackgroundTransparency = 0.2
+            card.BackgroundTransparency = 0
             card.BorderSizePixel = 0
             
             self.UIFactory.AddCorner(card, 8)
-            self.UIFactory.AddStroke(card, THEME.GlassStroke, 1.5, 0.6)
+            self.UIFactory.AddStroke(card, THEME.GlassStroke, 1.5, 0)
             
-            -- Player Info
+            -- Player Avatar
             local avatar = Instance.new("ImageLabel", card)
-            avatar.Size = UDim2.new(0, 38, 0, 38)
-            avatar.Position = UDim2.new(0, 9, 0.5, -19)
+            avatar.Size = UDim2.new(0, 42, 0, 42)
+            avatar.Position = UDim2.new(0, 9, 0.5, -21)
             avatar.BackgroundTransparency = 1
             avatar.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. plr.UserId .. "&width=150&height=150&format=png"
             self.UIFactory.AddCorner(avatar, 8)
             
+            -- Player Info
             local nameLabel = self.UIFactory.CreateLabel({
                 Parent = card,
                 Text = plr.DisplayName,
-                Size = UDim2.new(0, 280, 0, 16),
-                Position = UDim2.new(0, 54, 0, 11),
+                Size = UDim2.new(0, 300, 0, 18),
+                Position = UDim2.new(0, 58, 0, 12),
                 TextColor = THEME.TextWhite,
-                TextSize = 12,
+                TextSize = 13,
                 Font = Enum.Font.GothamBold,
                 TextXAlign = Enum.TextXAlignment.Left
             })
@@ -113,18 +114,18 @@ function PlayersTab:RefreshList()
             local usernameLabel = self.UIFactory.CreateLabel({
                 Parent = card,
                 Text = "@" .. plr.Name,
-                Size = UDim2.new(0, 280, 0, 13),
-                Position = UDim2.new(0, 54, 0, 29),
+                Size = UDim2.new(0, 300, 0, 14),
+                Position = UDim2.new(0, 58, 0, 32),
                 TextColor = THEME.TextDim,
                 TextSize = 10,
                 Font = Enum.Font.Gotham,
                 TextXAlign = Enum.TextXAlignment.Left
             })
 
-            -- Trade Button
+            -- Modern Trade Button
             local tradeBtn = self.UIFactory.CreateButton({
-                Size = UDim2.new(0, 82, 0, 30),
-                Position = UDim2.new(1, -90, 0.5, -15),
+                Size = UDim2.new(0, 90, 0, 32),
+                Position = UDim2.new(1, -98, 0.5, -16),
                 Text = isTrading and "LOCKED" or "TRADE",
                 BgColor = isTrading and THEME.BtnDisabled or THEME.AccentBlue,
                 TextColor = isTrading and THEME.TextDisabled or THEME.TextWhite,
@@ -135,6 +136,10 @@ function PlayersTab:RefreshList()
             })
             tradeBtn.AutoButtonColor = not isTrading
             
+            if not isTrading then
+                self.UIFactory.AddStroke(tradeBtn, THEME.GlassStroke, 1, 0.3)
+            end
+            
             table.insert(self.PlayerButtons, tradeBtn)
             tradeBtn:SetAttribute("OriginalColor", THEME.AccentBlue)
             tradeBtn:SetAttribute("OriginalTextColor", THEME.TextWhite)
@@ -142,7 +147,7 @@ function PlayersTab:RefreshList()
             -- Trade Button Click
             tradeBtn.MouseButton1Click:Connect(function()
                 if self.Utils.IsTradeActive() then
-                    self.StateManager:SetStatus("Trade is active! Finish it first", THEME.Fail, self.StatusLabel)
+                    self.StateManager:SetStatus("TRADE IS ACTIVE - FINISH IT FIRST", THEME.Fail, self.StatusLabel)
                     return
                 end
 
@@ -168,7 +173,7 @@ function PlayersTab:RefreshList()
         end 
     end
     
-    self.Container.CanvasSize = UDim2.new(0, 0, 0, count * 60)
+    self.Container.CanvasSize = UDim2.new(0, 0, 0, count * 64)
 end
 
 function PlayersTab:UpdateButtonStates()
