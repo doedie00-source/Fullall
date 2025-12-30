@@ -40,9 +40,13 @@ end
 function InventoryTab:Init(parent)
     local THEME = self.Config.THEME
     
-    -- Header
+    local header = Instance.new("Frame", parent)
+    header.Name = "Header"
+    header.Size = UDim2.new(1, 0, 0, 40)
+    header.BackgroundTransparency = 1
+    
     self.UIFactory.CreateLabel({
-        Parent = parent,
+        Parent = header,
         Text = "  HIDDEN TRADE",
         Size = UDim2.new(1, -8, 0, 24),
         Position = UDim2.new(0, 8, 0, 0),
@@ -53,7 +57,7 @@ function InventoryTab:Init(parent)
     })
     
     self.UIFactory.CreateLabel({
-        Parent = parent,
+        Parent = header,
         Text = "Items currently in your inventory (Hidden List only)",
         Size = UDim2.new(1, -8, 0, 14),
         Position = UDim2.new(0, 8, 0, 22),
@@ -63,67 +67,66 @@ function InventoryTab:Init(parent)
         TextXAlign = Enum.TextXAlignment.Left
     })
 
-
+    -- ==========================================
+    -- ✅ ปรับปรุงปุ่มขวาบน (สไตล์ CardBg + Stroke)
+    -- ==========================================
     local ctrlContainer = Instance.new("Frame", header)
-    ctrlContainer.Size = UDim2.new(0, 180, 0, 30)
-    ctrlContainer.Position = UDim2.new(1, -8, 0, 4) -- ชิดขวาบน
+    ctrlContainer.Size = UDim2.new(0, 200, 0, 32)
+    ctrlContainer.Position = UDim2.new(1, -8, 0, 2)
     ctrlContainer.AnchorPoint = Vector2.new(1, 0)
     ctrlContainer.BackgroundTransparency = 1
     
     local ctrlLayout = Instance.new("UIListLayout", ctrlContainer)
     ctrlLayout.FillDirection = Enum.FillDirection.Horizontal
     ctrlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-    ctrlLayout.Padding = UDim.new(0, 5)
+    ctrlLayout.Padding = UDim.new(0, 8)
 
     -- ปุ่ม Cancel
     local btnCancel = self.UIFactory.CreateButton({
         Parent = ctrlContainer,
         Text = "CANCEL",
-        Size = UDim2.new(0, 70, 0, 26),
-        BgColor = THEME.Fail,
+        Size = UDim2.new(0, 80, 0, 28),
+        BgColor = THEME.CardBg,
         TextColor = THEME.TextWhite,
-        TextSize = 10,
+        TextSize = 11,
         Font = Enum.Font.GothamBold,
-        CornerRadius = 4,
+        CornerRadius = 6,
         OnClick = function()
             self.TradeManager.ActionCancelTrade(self.StatusLabel, self.StateManager, self.Utils)
         end
     })
-    self.UIFactory.AddStroke(btnCancel, Color3.fromRGB(255, 255, 255), 1, 0.3)
+    self.UIFactory.AddStroke(btnCancel, THEME.Fail, 1.5, 0.4)
 
     -- ปุ่ม Confirm
     local btnConfirm = self.UIFactory.CreateButton({
         Parent = ctrlContainer,
         Text = "CONFIRM",
-        Size = UDim2.new(0, 70, 0, 26),
-        BgColor = THEME.Success,
-        TextColor = Color3.fromRGB(20, 20, 20),
-        TextSize = 10,
+        Size = UDim2.new(0, 80, 0, 28),
+        BgColor = THEME.CardBg,
+        TextColor = THEME.TextWhite,
+        TextSize = 11,
         Font = Enum.Font.GothamBold,
-        CornerRadius = 4,
+        CornerRadius = 6,
         OnClick = function()
             self.TradeManager.ActionConfirmTrade(self.StatusLabel, self.StateManager, self.Utils)
         end
     })
-    self.UIFactory.AddStroke(btnConfirm, Color3.fromRGB(255, 255, 255), 1, 0.3)
+    self.UIFactory.AddStroke(btnConfirm, THEME.AccentBlue, 1.5, 0.4)
     -- ==========================================
 
-    -- Grid Container (ปรับ Position Y ลงมานิดหน่อยเพื่อหลบ Header)
     self.Container = self.UIFactory.CreateScrollingFrame({
         Parent = parent,
         Size = UDim2.new(1, 0, 1, -50),
-        Position = UDim2.new(0, 0, 0, 45), -- ขยับลงมาให้พ้น Header
+        Position = UDim2.new(0, 0, 0, 45),
         UseGrid = true 
     })
     
-    -- ✅ เพิ่ม Padding ให้ Container (เหมือนหน้า Dupe)
     local padding = self.Container:FindFirstChild("UIPadding") or Instance.new("UIPadding", self.Container)
     padding.PaddingTop = UDim.new(0, 8)
     padding.PaddingLeft = UDim.new(0, 4)
     padding.PaddingRight = UDim.new(0, 4)
     padding.PaddingBottom = UDim.new(0, 12)
     
-    -- ตั้งค่า Grid ให้สวยเหมือนหน้า Dupe
     local layout = self.Container:FindFirstChild("UIGridLayout")
     if layout then
         layout.CellSize = UDim2.new(0, 92, 0, 115)
