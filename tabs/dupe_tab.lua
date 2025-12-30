@@ -1002,76 +1002,101 @@ function DupeTab:UpdateEvoButtonState()
     local replica = ReplicaListener:GetReplica()
     local myPets = replica and replica.Data.PetsService and replica.Data.PetsService.Pets or {}
     
-    local selectedPetsData = {}
-    local count = 0
-    
-    for uuid, _ in pairs(self.StateManager.selectedPets) do
+    -- ดึงข้อมูลสัตว์เลี้ยงที่เลือกมาเรียงลำดับตาม Order 1-9
+    local selectedList = {}
+    for uuid, order in pairs(self.StateManager.selectedPets) do
         if myPets[uuid] then
-            table.insert(selectedPetsData, myPets[uuid])
-            count = count + 1
+            table.insert(selectedList, {
+                Data = myPets[uuid],
+                Order = order
+            })
         end
     end
+    table.sort(selectedList, function(a, b) return a.Order < b.Order end)
     
-    local btnText = "EVOLVE (0/3)"
+    local count = #selectedList
+    local btnText = "EVOLVE (" .. count .. ")"
     local isValid = false
     
-    if count ~= 3 then
-        btnText = "SELECT 3 (" .. count .. "/3)"
-    else
-        local firstPet = selectedPetsData[1]
+    -- ====================================================
+    -- ตรวจสอบเงื่อนไข
+    -- ====================================================
+    if count == 0 then
+        btnText = "SELECT PETS"
+        
+    elseif count == 3 then
+        -- เงื่อนไขปกติ: 3 ตัว, ชื่อเหมือน, Evo เท่ากัน
+        local firstPet = selectedList[1].Data
         local allSameName = true
         local allSameEvo = true
         local notMaxLevel = true
         
-        for i = 2, #selectedPetsData do
-            if selectedPetsData[i].Name ~= firstPet.Name then
-                allSameName = false
-            end
-            if (selectedPetsData[i].Evolution or 0) ~= (firstPet.Evolution or 0) then
-                allSameEvo = false
-            end
+        for i = 2, count do
+            local p = selectedList[i].Data
+            if p.Name ~= firstPet.Name then allSameName = false end
+            if (p.Evolution or 0) ~= (firstPet.Evolution or 0) then allSameEvo = false end
         end
         
-        if (firstPet.Evolution or 0) >= 2 then
-            notMaxLevel = false
+        if (firstPet.Evolution or 0) >= 2 then notMaxLevel = false end
+        
+        if not allSameName then btnText = "❌ NAME MISMATCH"
+        elseif not allSameEvo then btnText = "❌ EVO MISMATCH"
+        elseif not notMaxLevel then btnText = "🚫 MAX LEVEL"
+        else
+            btnText = "✅ EVOLVE (Normal)"
+            isValid = true
+        end
+        
+    elseif count == 9 then
+        -- เงื่อนไขพิเศษ: 9 ตัว, ชื่อเหมือน, ต้อง Evo 0 ทั้งหมด
+        local firstPet = selectedList[1].Data
+        local allSameName = true
+        local allEvoZero = true
+        
+        for i = 1, count do
+            local p = selectedList[i].Data
+            if p.Name ~= firstPet.Name then allSameName = false end
+            if (p.Evolution or 0) ~= 0 then allEvoZero = false end
         end
         
         if not allSameName then
             btnText = "❌ NAME MISMATCH"
-        elseif not allSameEvo then
-            btnText = "❌ EVO MISMATCH"
-        elseif not notMaxLevel then
-            btnText = "🚫 MAX LEVEL"
+        elseif not allEvoZero then
+            btnText = "❌ MUST BE EVO 0"
         else
-            btnText = "✅ EVOLVE NOW"
+            btnText = "⚡ FAST MAX (9->1)"
             isValid = true
         end
+        
+    else
+        -- ถ้าเลือกจำนวนอื่นที่ไม่ใช่ 3 หรือ 9
+        btnText = "SELECT 3 OR 9 (" .. count .. ")"
     end
     
+    -- ====================================================
+    -- อัปเดตหน้าตาปุ่ม
+    -- ====================================================
     self.FloatingButtons.BtnEvoPet.Text = btnText
     
-
     if isValid then
-
-        self.FloatingButtons.BtnEvoPet.BackgroundColor3 = THEME.CardBg 
+        self.FloatingButtons.BtnEvoPet.BackgroundColor3 = (count == 9) and THEME.BtnDupe or THEME.CardBg 
         self.FloatingButtons.BtnEvoPet.AutoButtonColor = true
         self.FloatingButtons.BtnEvoPet.TextTransparency = 0
         self.FloatingButtons.BtnEvoPet.TextColor3 = THEME.TextWhite
         
         if self.FloatingButtons.BtnEvoPet:FindFirstChild("UIStroke") then
-            self.FloatingButtons.BtnEvoPet.UIStroke.Color = THEME.AccentBlue
+            self.FloatingButtons.BtnEvoPet.UIStroke.Color = (count == 9) and Color3.fromRGB(255, 200, 0) or THEME.AccentBlue
             self.FloatingButtons.BtnEvoPet.UIStroke.Thickness = 1.5
             self.FloatingButtons.BtnEvoPet.UIStroke.Transparency = 0.4
         end
     else
-        -- กรณีใช้งานไม่ได้: พื้นหลัง Card, ตัวหนังสือจาง, ขอบสีเทาจาง
         self.FloatingButtons.BtnEvoPet.BackgroundColor3 = THEME.CardBg
         self.FloatingButtons.BtnEvoPet.AutoButtonColor = false
         self.FloatingButtons.BtnEvoPet.TextTransparency = 0.5
         self.FloatingButtons.BtnEvoPet.TextColor3 = Color3.fromRGB(150, 150, 150)
         
         if self.FloatingButtons.BtnEvoPet:FindFirstChild("UIStroke") then
-            self.FloatingButtons.BtnEvoPet.UIStroke.Color = Color3.fromRGB(80, 80, 80) -- เทา
+            self.FloatingButtons.BtnEvoPet.UIStroke.Color = Color3.fromRGB(80, 80, 80)
             self.FloatingButtons.BtnEvoPet.UIStroke.Thickness = 1
             self.FloatingButtons.BtnEvoPet.UIStroke.Transparency = 0.7
         end
