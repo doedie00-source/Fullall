@@ -491,27 +491,84 @@ function TradeManager.ExecuteEvolution(statusLabel, callback, StateManager)
     local THEME = StateManager.Config and StateManager.Config.THEME or {
         BtnSelected = Color3.fromRGB(0, 140, 255),
         Success = Color3.fromRGB(85, 255, 127),
-        Fail = Color3.fromRGB(255, 85, 85)
+        Fail = Color3.fromRGB(255, 85, 85),
+        Warning = Color3.fromRGB(255, 200, 0)
     }
     
-    local selectedUUIDs = {}
+    -- 1. เตรียมข้อมูล UUID ตามลำดับการเลือก (1-9)
+    local selectedItems = {}
     for uuid, order in pairs(StateManager.selectedPets) do
-        table.insert(selectedUUIDs, {UUID = uuid, Order = order})
+        table.insert(selectedItems, {UUID = uuid, Order = order})
     end
     
-    table.sort(selectedUUIDs, function(a, b) 
+    table.sort(selectedItems, function(a, b) 
         return a.Order < b.Order 
     end)
     
-    local finalPayload = {}
-    for _, item in ipairs(selectedUUIDs) do
-        table.insert(finalPayload, item.UUID)
+    local sortedUUIDs = {}
+    for _, item in ipairs(selectedItems) do
+        table.insert(sortedUUIDs, item.UUID)
     end
     
-    StateManager:SetStatus("🧬 Evolving Pets...", THEME.BtnSelected, statusLabel)
+    local count = #sortedUUIDs
+    local PetServiceRF = ReplicatedStorage.Packages.Knit.Services.PetsService.RF.Evolve
+    
+    -- ==========================================
+    -- กรณี: เลือก 9 ตัว (สูตรพิเศษ Evo 0 -> Evo 2)
+    -- ==========================================
+    if count == 9 then
+        StateManager:SetStatus("🚀 Starting Fast Evo (9 Pets)...", THEME.BtnSelected, statusLabel)
+        
+        task.spawn(function()
+            -- Step 1: 1, 2, 3 -> ได้ 1 (Evo 1)
+            StateManager:SetStatus("⏳ Step 1/4: Evolving Group A...", THEME.BtnSelected, statusLabel)
+            local group1 = {sortedUUIDs[1], sortedUUIDs[2], sortedUUIDs[3]}
+            PetServiceRF:InvokeServer(group1)
+            task.wait(0.8) -- รอ Server ประมวลผล
+            
+            -- Step 2: 4, 5, 6 -> ได้ 4 (Evo 1)
+            StateManager:SetStatus("⏳ Step 2/4: Evolving Group B...", THEME.BtnSelected, statusLabel)
+            local group2 = {sortedUUIDs[4], sortedUUIDs[5], sortedUUIDs[6]}
+            PetServiceRF:InvokeServer(group2)
+            task.wait(0.8)
+            
+            -- Step 3: 7, 8, 9 -> ได้ 7 (Evo 1)
+            StateManager:SetStatus("⏳ Step 3/4: Evolving Group C...", THEME.BtnSelected, statusLabel)
+            local group3 = {sortedUUIDs[7], sortedUUIDs[8], sortedUUIDs[9]}
+            PetServiceRF:InvokeServer(group3)
+            task.wait(0.8)
+            
+            -- Step 4: เอาตัวรอด (1, 4, 7) มารวมกัน -> ได้ 1 (Evo 2)
+            StateManager:SetStatus("✨ Step 4/4: Final Fusion (Max)...", THEME.Warning, statusLabel)
+            local finalGroup = {sortedUUIDs[1], sortedUUIDs[4], sortedUUIDs[7]}
+            local success, err = pcall(function()
+                return PetServiceRF:InvokeServer(finalGroup)
+            end)
+            
+            if success then
+                StateManager:SetStatus("✅ Fast Evo Complete (Evo 2)!", THEME.Success, statusLabel)
+                StateManager.selectedPets = {} -- ล้างการเลือก
+                if callback then callback() end
+            else
+                StateManager:SetStatus("❌ Final Step Failed: " .. tostring(err), THEME.Fail, statusLabel)
+            end
+        end)
+        
+        return -- จบการทำงานสำหรับเคส 9 ตัว
+    end
+
+    -- ==========================================
+    -- กรณีปกติ (3 ตัว)
+    -- ==========================================
+    if count ~= 3 then
+        StateManager:SetStatus("❌ Logic Error: Need 3 or 9 pets", THEME.Fail, statusLabel)
+        return
+    end
+
+    StateManager:SetStatus("🧬 Evolving Pets (Normal)...", THEME.BtnSelected, statusLabel)
     
     local success, err = pcall(function()
-        return ReplicatedStorage.Packages.Knit.Services.PetsService.RF.Evolve:InvokeServer(finalPayload)
+        return PetServiceRF:InvokeServer(sortedUUIDs)
     end)
     
     if success then
@@ -521,6 +578,85 @@ function TradeManager.ExecuteEvolution(statusLabel, callback, StateManager)
     else
         StateManager:SetStatus("❌ Evo Failed: " .. tostring(err), THEME.Fail, statusLabel)
     end
+end
+
+function TradeManager.ActionConfirmTrade(statusLabel, StateManager, Utils)
+    local THEME = StateManager.Config and StateManager.Config.THEME
+    
+    if TradeManager.IsProcessing then return end
+    
+    if not Utils.IsTradeActive() then
+        StateManager:SetStatus("⚠️ Trade not active!", THEME.Fail, statusLabel)
+        return
+    end
+
+    local targetId = TradeManager.GetGameTradeId()
+    if not targetId then
+        StateManager:SetStatus("❌ Target ID not found!", THEME.Fail, statusLabel)
+        return
+    end
+
+    TradeManager.IsProcessing = true
+    StateManager:SetStatus("⏳ Confirming...", THEME.BtnSelected, statusLabel)
+
+    task.spawn(function()
+        local success, err = pcall(function()
+            local Remote = ReplicatedStorage.Packages.Knit.Services.TradingService.RF:FindFirstChild("ToggleTradeAccept")
+            if Remote then
+                return Remote:InvokeServer(targetId, true, true)
+            end
+            return false
+        end)
+
+        if success then
+            StateManager:SetStatus("✅ Trade Confirmed!", THEME.Success, statusLabel)
+        else
+            StateManager:SetStatus("❌ Confirm Failed!", THEME.Fail, statusLabel)
+        end
+        
+        task.wait(0.5)
+        TradeManager.IsProcessing = false
+    end)
+end
+
+function TradeManager.ActionCancelTrade(statusLabel, StateManager, Utils)
+    local THEME = StateManager.Config and StateManager.Config.THEME
+    
+    if TradeManager.IsProcessing then return end
+
+    if not Utils.IsTradeActive() then
+        StateManager:SetStatus("⚠️ Trade not active!", THEME.Fail, statusLabel)
+        return
+    end
+
+    local targetId = TradeManager.GetGameTradeId()
+    if not targetId then
+        StateManager:SetStatus("❌ Target ID not found!", THEME.Fail, statusLabel)
+        return
+    end
+
+    TradeManager.IsProcessing = true
+    StateManager:SetStatus("⏳ Cancelling...", THEME.Fail, statusLabel)
+
+    task.spawn(function()
+        local success, err = pcall(function()
+            local Remote = ReplicatedStorage.Packages.Knit.Services.TradingService.RF:FindFirstChild("CancelTrade")
+            if Remote then
+                return Remote:InvokeServer(targetId)
+            end
+            return false
+        end)
+
+        if success then
+            StateManager:SetStatus("🗑️ Trade Cancelled!", THEME.Success, statusLabel)
+            StateManager:ResetTrade() -- ล้างข้อมูล Trade ใน UI
+        else
+            StateManager:SetStatus("❌ Cancel Failed!", THEME.Fail, statusLabel)
+        end
+
+        task.wait(0.5)
+        TradeManager.IsProcessing = false
+    end)
 end
 
 
