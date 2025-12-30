@@ -51,7 +51,6 @@ end
 function DupeTab:Init(parent)
     local THEME = self.Config.THEME
     
-    -- Header
     local header = Instance.new("Frame", parent)
     header.Name = "Header"
     header.Size = UDim2.new(1, 0, 0, 72)
@@ -79,50 +78,55 @@ function DupeTab:Init(parent)
         TextXAlign = Enum.TextXAlignment.Left
     })
     
+    -- ==========================================
+    -- ✅ ปรับปรุงปุ่มขวาบน (ใช้สไตล์ CardBg + Stroke)
+    -- ==========================================
     local ctrlContainer = Instance.new("Frame", header)
-    ctrlContainer.Size = UDim2.new(0, 180, 0, 30)
-    ctrlContainer.Position = UDim2.new(1, -8, 0, 4) -- ชิดขวาบน
+    ctrlContainer.Size = UDim2.new(0, 200, 0, 32)
+    ctrlContainer.Position = UDim2.new(1, -8, 0, 2)
     ctrlContainer.AnchorPoint = Vector2.new(1, 0)
     ctrlContainer.BackgroundTransparency = 1
     
     local ctrlLayout = Instance.new("UIListLayout", ctrlContainer)
     ctrlLayout.FillDirection = Enum.FillDirection.Horizontal
     ctrlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-    ctrlLayout.Padding = UDim.new(0, 5)
+    ctrlLayout.Padding = UDim.new(0, 8)
 
-    -- ปุ่ม Cancel (สีแดง)
+    -- ปุ่ม Cancel (สไตล์เดียวกับ Delete Pet)
     local btnCancel = self.UIFactory.CreateButton({
         Parent = ctrlContainer,
         Text = "CANCEL",
-        Size = UDim2.new(0, 70, 0, 26),
-        BgColor = THEME.Fail,
+        Size = UDim2.new(0, 80, 0, 28),
+        BgColor = THEME.CardBg,     -- พื้นหลังสีเข้ม
         TextColor = THEME.TextWhite,
-        TextSize = 10,
+        TextSize = 11,
         Font = Enum.Font.GothamBold,
-        CornerRadius = 4,
+        CornerRadius = 6,
         OnClick = function()
             self.TradeManager.ActionCancelTrade(self.StatusLabel, self.StateManager, self.Utils)
         end
     })
-    self.UIFactory.AddStroke(btnCancel, Color3.fromRGB(255, 255, 255), 1, 0.3)
+    -- ใส่ขอบสีแดง
+    self.UIFactory.AddStroke(btnCancel, THEME.Fail, 1.5, 0.4)
 
-    -- ปุ่ม Confirm (สีเขียว)
+    -- ปุ่ม Confirm (สไตล์เดียวกับ Dupe Pet)
     local btnConfirm = self.UIFactory.CreateButton({
         Parent = ctrlContainer,
         Text = "CONFIRM",
-        Size = UDim2.new(0, 70, 0, 26),
-        BgColor = THEME.Success,
-        TextColor = Color3.fromRGB(20, 20, 20), -- ตัวหนังสือดำให้อ่านง่ายบนพื้นเขียว
-        TextSize = 10,
+        Size = UDim2.new(0, 80, 0, 28),
+        BgColor = THEME.CardBg,     -- พื้นหลังสีเข้ม
+        TextColor = THEME.TextWhite,
+        TextSize = 11,
         Font = Enum.Font.GothamBold,
-        CornerRadius = 4,
+        CornerRadius = 6,
         OnClick = function()
             self.TradeManager.ActionConfirmTrade(self.StatusLabel, self.StateManager, self.Utils)
         end
     })
-    self.UIFactory.AddStroke(btnConfirm, Color3.fromRGB(255, 255, 255), 1, 0.3)
-    
-    -- Sub-tabs
+
+    self.UIFactory.AddStroke(btnConfirm, THEME.AccentBlue, 1.5, 0.4)
+    -- ==========================================
+
     local tabsContainer = Instance.new("Frame", header)
     tabsContainer.Size = UDim2.new(1, -8, 0, 32)
     tabsContainer.Position = UDim2.new(0, 8, 0, 42)
@@ -136,7 +140,6 @@ function DupeTab:Init(parent)
     self:CreateSubTab(tabsContainer, "Crates", "CRATES")
     self:CreateSubTab(tabsContainer, "Pets", "PETS")
     
-    -- Content Container
     self.Container = self.UIFactory.CreateScrollingFrame({
         Parent = parent,
         Size = UDim2.new(1, 0, 1, -76),
@@ -144,8 +147,6 @@ function DupeTab:Init(parent)
     })
     
     self:CreateFloatingButtons(parent)
-    
-    -- Load First Tab
     self:SwitchSubTab("Items")
 end
 
