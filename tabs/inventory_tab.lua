@@ -431,7 +431,7 @@ function InventoryTab:ShowQuantityPopup(itemData, onConfirm)
     popupBox.BorderSizePixel = 0
     
     self.UIFactory.AddCorner(popupBox, 10)
-    self.UIFactory.AddStroke(popupBox, THEME.AccentPurple, 2, 0)
+    self.UIFactory.AddStroke(popupBox, THEME.AccentBlue, 2, 0)
     
     local titleLabel = self.UIFactory.CreateLabel({
         Parent = popupBox,
@@ -475,7 +475,7 @@ function InventoryTab:ShowQuantityPopup(itemData, onConfirm)
         Size = UDim2.new(0.85, 0, 0, 34),
         Position = UDim2.new(0.075, 0, 0.7, 0),
         Text = "CONFIRM",
-        BgColor = THEME.AccentPurple,
+        BgColor = THEME.AccentBlue,
         CornerRadius = 6,
         Parent = popupBox
     })
