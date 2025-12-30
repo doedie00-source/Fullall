@@ -44,7 +44,7 @@ function PlayersTab:Init(parent)
         Size = UDim2.new(1, -8, 0, 14),
         Position = UDim2.new(0, 8, 0, 28),
         TextColor = THEME.TextDim,
-        TextSize = 10,
+        TextSize = 9,
         Font = Enum.Font.Gotham,
         TextXAlign = Enum.TextXAlignment.Left
     })
