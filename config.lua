@@ -29,60 +29,59 @@ local CONFIG = {
 -- config.lua (Aggressive Midnight Edition)
 
 local THEME = {
-    -- Base: Deep Void (ดำเกือบสนิท ผสมน้ำเงินลึกสุดๆ)
-    MainBg = Color3.fromRGB(5, 6, 10),              -- ดำลึก (Deep Void) - เข้มกว่าเดิมมาก
-    MainTransparency = 0,                           -- ทึบตัน (Solid) ไม่จาง
+    -- Base: Deep Navy (พื้นหลังน้ำเงินมืด แบบโปรแกรม Python)
+    MainBg = Color3.fromRGB(10, 13, 20),            -- น้ำเงินมืดเกือบดำ (Dark Navy)
+    MainTransparency = 0,                           -- ทึบ 100%
 
-    PanelBg = Color3.fromRGB(12, 14, 20),           -- ดำน้ำเงินเข้ม (Deep Navy)
+    PanelBg = Color3.fromRGB(15, 20, 30),           -- พื้นหลังรอง สว่างขึ้นนิดนึง
     PanelTransparency = 0,
 
-    -- Container/Glass: (ดำตัดขอบดุๆ)
-    GlassBg = Color3.fromRGB(15, 18, 25),           -- พื้นหลังกล่อง สีเข้มจัด
-    GlassTransparency = 0,
-    GlassStroke = Color3.fromRGB(40, 55, 80),       -- เส้นขอบสีน้ำเงินหม่น ตัดให้เห็นขอบเขตชัดเจน
+    -- Glass/Containers (จุดสำคัญ! เส้นขอบสีฟ้าสว่าง)
+    GlassBg = Color3.fromRGB(20, 25, 40),           -- พื้นหลังกล่องข้อความ
+    GlassTransparency = 0,                          
+    GlassStroke = Color3.fromRGB(0, 100, 200),      -- **เส้นขอบสีน้ำเงินฟ้า (Electric Blue)** ตัดขอบชัดๆ แบบในรูป
 
-    -- Text: (ขาวจั๊วะ ตัดกับพื้นดำ)
-    TextWhite = Color3.fromRGB(255, 255, 255),      -- ขาวบริสุทธิ์ อ่านง่ายสุดบนพื้นดำ
-    TextGray = Color3.fromRGB(180, 190, 210),       -- เทาอมฟ้าสว่าง
-    TextDim = Color3.fromRGB(100, 110, 130),        -- เทาเข้ม
+    -- Text (ขาวกับฟ้า)
+    TextWhite = Color3.fromRGB(240, 250, 255),      -- ขาวอมฟ้านิดๆ
+    TextGray = Color3.fromRGB(140, 160, 190),       -- เทาฟ้า
+    TextDim = Color3.fromRGB(80, 100, 130),         -- เทาเข้ม
 
-    -- Buttons: (ดุดัน พื้นดำน้ำเงิน กดแล้วฟ้าสด)
-    BtnDefault = Color3.fromRGB(20, 25, 35),        -- ปุ่มสีดำน้ำเงิน
-    BtnHover = Color3.fromRGB(30, 45, 80),          -- เมาส์ชี้แล้วสว่างขึ้นแบบมีสีสัน
-    BtnSelected = Color3.fromRGB(0, 90, 220),       -- ** สีน้ำเงินสด (Electric Blue) ** ตัดฉับ!
+    -- Buttons (ปุ่มสไตล์ System)
+    BtnDefault = Color3.fromRGB(25, 35, 55),        -- ปุ่มพื้นน้ำเงินเข้ม
+    BtnHover = Color3.fromRGB(0, 80, 160),          -- ชี้แล้วเป็นสีฟ้าเข้ม
+    BtnSelected = Color3.fromRGB(0, 120, 220),      -- เลือกแล้วเป็นสีฟ้าสว่าง (Cyan Blue)
     
-    BtnMainTab = Color3.fromRGB(15, 18, 24),        -- แท็บสีมืด
-    BtnMainTabSelected = Color3.fromRGB(0, 100, 255), -- เลือกแล้วเป็นสีน้ำเงินนีออน
+    BtnMainTab = Color3.fromRGB(18, 22, 35),        -- แท็บด้านซ้าย
+    BtnMainTabSelected = Color3.fromRGB(0, 120, 220), -- แท็บที่เลือกสีฟ้าสว่าง
 
-    BtnDupe = Color3.fromRGB(0, 100, 255),          -- ปุ่ม Dupe สีน้ำเงินสด
-    BtnDisabled = Color3.fromRGB(10, 12, 16),       -- ดำมืด
-    TextDisabled = Color3.fromRGB(60, 65, 75),      -- สีจางจนเกือบมองไม่เห็น
+    BtnDupe = Color3.fromRGB(0, 120, 220),          -- ปุ่มหลักสีฟ้าสว่าง
+    BtnDisabled = Color3.fromRGB(12, 15, 20),       -- ปุ่มปิด
+    TextDisabled = Color3.fromRGB(60, 70, 90),
 
-    -- Status Colors (นีออน ตัดพื้นดำ)
-    Success = Color3.fromRGB(0, 255, 150),          -- เขียวนีออน
-    Fail = Color3.fromRGB(255, 50, 50),             -- แดงสด
-    Warning = Color3.fromRGB(255, 200, 0),          -- เหลืองสด
-    Info = Color3.fromRGB(0, 180, 255),             -- ฟ้าสด
+    -- Status Colors (นีออนชัดๆ)
+    Success = Color3.fromRGB(0, 255, 180),          -- เขียวมิ้นต์ (Cyber Green)
+    Fail = Color3.fromRGB(255, 60, 60),             -- แดงสด
+    Warning = Color3.fromRGB(255, 200, 50),         -- เหลือง
+    Info = Color3.fromRGB(0, 180, 255),             -- ฟ้า
     
     -- Item Status
-    ItemInv = Color3.fromRGB(0, 255, 150),
-    ItemEquip = Color3.fromRGB(255, 50, 50),
-    PlayerBtn = Color3.fromRGB(25, 30, 40),
-    DupeReady = Color3.fromRGB(0, 255, 150),
+    ItemInv = Color3.fromRGB(0, 255, 180),
+    ItemEquip = Color3.fromRGB(255, 60, 60),
+    PlayerBtn = Color3.fromRGB(30, 40, 60),
+    DupeReady = Color3.fromRGB(0, 255, 180),
 
-    -- Cards (พื้นดำ ตัดขอบสีน้ำเงินเข้ม)
-    CardBg = Color3.fromRGB(18, 20, 28),            -- การ์ดสีดำน้ำเงินเข้ม
-    CardStrokeSelected = Color3.fromRGB(0, 140, 255), -- ขอบฟ้าสว่างวาบ (Electric Stroke)
-    CardStrokeLocked = Color3.fromRGB(200, 30, 30),   -- ขอบแดงเข้ม
-    CrateSelected = Color3.fromRGB(0, 140, 255),
+    -- Cards (การ์ดแบบ Cyber)
+    CardBg = Color3.fromRGB(20, 28, 45),            -- พื้นหลังการ์ดน้ำเงินเข้ม
+    CardStrokeSelected = Color3.fromRGB(0, 160, 255), -- ขอบฟ้าสว่างวาบ (Cyan Glow)
+    CardStrokeLocked = Color3.fromRGB(200, 50, 50),
+    CrateSelected = Color3.fromRGB(0, 160, 255),
 
     -- Accent Colors
     StarColor = Color3.fromRGB(255, 215, 0),
-    AccentPurple = Color3.fromRGB(120, 50, 220),
-    AccentBlue = Color3.fromRGB(0, 110, 255),       -- ฟ้าเข้มสด (Vibrant Blue)
-    AccentGreen = Color3.fromRGB(0, 220, 120),
+    AccentPurple = Color3.fromRGB(140, 80, 255),
+    AccentBlue = Color3.fromRGB(0, 140, 255),       -- ฟ้าหลัก (Cyber Blue)
+    AccentGreen = Color3.fromRGB(0, 220, 140),
 }
-
 local DUPE_RECIPES = {
     Items = {
         -- [SCROLLS]
