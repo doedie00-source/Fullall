@@ -1,113 +1,465 @@
--- config.lua
--- Professional Cyber Blue Theme Configuration
+-- gui.lua
+-- Professional Cyber Blue UI Controller
 
-local CONFIG = {
-    VERSION = "7.3",
-    GUI_NAME = "ModernTradeGUI",
-    
-    -- Window Settings
-    MAIN_WINDOW_SIZE = UDim2.new(0, 750, 0, 480),
-    SIDEBAR_WIDTH = 110,
-    MINI_ICON_SIZE = UDim2.new(0, 50, 0, 50),
-    
-    -- Timing
-    STATUS_RESET_DELAY = 4,
-    BUTTON_CHECK_INTERVAL = 0.5,
-    TRADE_RESET_THRESHOLD = 3,
-    
-    -- UI Spacing
-    CORNER_RADIUS = 10,
-    LIST_PADDING = 4,
-    BUTTON_PADDING = 5,
-    CARD_PADDING = 6,
-    
-    -- Keybind
-    TOGGLE_KEY = Enum.KeyCode.T,
-}
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
--- Professional Cyber Blue Theme (No Emojis)
-local THEME = {
-    -- Base: Deep Navy (Dark Blue Background - Professional)
-    MainBg = Color3.fromRGB(10, 13, 20),            -- Deep Navy Blue (Almost Black)
-    MainTransparency = 0,                           -- Solid
-    PanelBg = Color3.fromRGB(15, 20, 30),           -- Secondary Background
-    PanelTransparency = 0,
-    
-    -- Glass/Containers (Electric Blue Borders - Signature Look)
-    GlassBg = Color3.fromRGB(20, 25, 40),           -- Container Background
-    GlassTransparency = 0,                          
-    GlassStroke = Color3.fromRGB(0, 100, 200),      -- **Electric Blue Border** (Key Visual)
-    
-    -- Text (White and Blue)
-    TextWhite = Color3.fromRGB(240, 250, 255),      -- Pure White with Blue tint
-    TextGray = Color3.fromRGB(140, 160, 190),       -- Gray Blue
-    TextDim = Color3.fromRGB(80, 100, 130),         -- Dim Gray
-    
-    -- Buttons (System Style)
-    BtnDefault = Color3.fromRGB(25, 35, 55),        -- Default Button Dark Blue
-    BtnHover = Color3.fromRGB(0, 80, 160),          -- Hover Dark Cyan
-    BtnSelected = Color3.fromRGB(0, 120, 220),      -- Selected Bright Cyan
-    
-    BtnMainTab = Color3.fromRGB(18, 22, 35),        -- Sidebar Tab
-    BtnMainTabSelected = Color3.fromRGB(0, 120, 220), -- Selected Tab Bright Cyan
-    BtnDupe = Color3.fromRGB(0, 120, 220),          -- Primary Action Button
-    BtnDisabled = Color3.fromRGB(12, 15, 20),       -- Disabled State
-    TextDisabled = Color3.fromRGB(60, 70, 90),
-    
-    -- Status Colors (Neon - High Visibility)
-    Success = Color3.fromRGB(0, 255, 180),          -- Cyber Green (Mint)
-    Fail = Color3.fromRGB(255, 60, 60),             -- Bright Red
-    Warning = Color3.fromRGB(255, 200, 50),         -- Yellow
-    Info = Color3.fromRGB(0, 180, 255),             -- Cyan Blue
-    
-    -- Item Status
-    ItemInv = Color3.fromRGB(0, 255, 180),          -- Available (Green)
-    ItemEquip = Color3.fromRGB(255, 60, 60),        -- Equipped (Red)
-    PlayerBtn = Color3.fromRGB(30, 40, 60),
-    DupeReady = Color3.fromRGB(0, 255, 180),
-    
-    -- Cards (Cyber Style)
-    CardBg = Color3.fromRGB(20, 28, 45),            -- Card Background Dark Blue
-    CardStrokeSelected = Color3.fromRGB(0, 160, 255), -- Cyan Glow Border
-    CardStrokeLocked = Color3.fromRGB(200, 50, 50),
-    CrateSelected = Color3.fromRGB(0, 160, 255),
-    
-    -- Accent Colors
-    StarColor = Color3.fromRGB(255, 215, 0),
-    AccentBlue = Color3.fromRGB(0, 140, 255),       -- Primary Cyber Blue
-    AccentGreen = Color3.fromRGB(0, 220, 140),
-}
+local GUI = {}
+GUI.__index = GUI
 
-local DUPE_RECIPES = {
-    Items = {
-        -- [SCROLLS]
-        {Name = "Dark Scroll", Tier = 5, RequiredTiers = {3, 4, 6}, Service = "Scrolls", Image = "83561916475671"},
+function GUI.new(deps)
+    local self = setmetatable({}, GUI)
+    
+    self.Config = deps.Config
+    self.Utils = deps.Utils
+    self.UIFactory = deps.UIFactory
+    self.StateManager = deps.StateManager
+    self.InventoryManager = deps.InventoryManager
+    self.TradeManager = deps.TradeManager
+    
+    self.TabsModules = deps.Tabs or {}
+    
+    self.ScreenGui = nil
+    self.MainFrame = nil
+    self.ContentArea = nil
+    self.ActiveTabInstance = nil
+    self.SidebarButtons = {}
+    
+    return self
+end
+
+function GUI:Initialize()
+    local CONFIG = self.Config.CONFIG
+    local THEME = self.Config.THEME
+    _G.ModernGUI = self
+
+    if CoreGui:FindFirstChild(CONFIG.GUI_NAME) then
+        pcall(function() CoreGui[CONFIG.GUI_NAME]:Destroy() end)
+    end
+    
+    self.ScreenGui = Instance.new("ScreenGui")
+    self.ScreenGui.Name = CONFIG.GUI_NAME
+    self.ScreenGui.Parent = CoreGui
+    self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+    self.ScreenGui.DisplayOrder = 100
+    self.ScreenGui.IgnoreGuiInset = true
+
+    self:CreateMiniIcon()
+    
+    self.MainFrame = Instance.new("Frame", self.ScreenGui)
+    self.MainFrame.Name = "MainWindow"
+    self.MainFrame.Size = CONFIG.MAIN_WINDOW_SIZE
+    self.MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    self.MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    self.MainFrame.BackgroundColor3 = THEME.MainBg
+    self.MainFrame.BackgroundTransparency = THEME.MainTransparency
+    self.MainFrame.BorderSizePixel = 0
+    self.MainFrame.ClipsDescendants = true
+    
+    self.UIFactory.AddCorner(self.MainFrame, 8)
+    self.UIFactory.AddStroke(self.MainFrame, THEME.GlassStroke, 2, 0)
+    
+    self:CreateTitleBar()
+    self:CreateSidebar()
+    
+    self.ContentArea = Instance.new("Frame", self.MainFrame)
+    self.ContentArea.Name = "ContentArea"
+    self.ContentArea.Size = UDim2.new(1, -CONFIG.SIDEBAR_WIDTH - 18, 1, -82) 
+    self.ContentArea.Position = UDim2.new(0, CONFIG.SIDEBAR_WIDTH + 10, 0, 42)
+    self.ContentArea.BackgroundTransparency = 1
+    self.ContentArea.BorderSizePixel = 0
+
+    -- Professional Status Bar (Transparent, No Border)
+    local StatusBarBg = Instance.new("Frame", self.MainFrame)
+    StatusBarBg.Name = "StatusBar"
+    StatusBarBg.Size = UDim2.new(1, -16, 0, 28)
+    StatusBarBg.Position = UDim2.new(0, 8, 1, -34)
+    StatusBarBg.BackgroundColor3 = THEME.GlassBg
+    StatusBarBg.BackgroundTransparency = 0.7  -- โปร่งใสมากขึ้น
+    StatusBarBg.BorderSizePixel = 0
+    StatusBarBg.ZIndex = 100
+    
+    self.UIFactory.AddCorner(StatusBarBg, 6)
+    -- ไม่มีกรอบ (ลบ AddStroke ออก)
+    
+    -- Status Label (Clean, No Emojis - Enhanced Visibility)
+    self.StatusLabel = self.UIFactory.CreateLabel({
+        Parent = StatusBarBg,
+        Text = "READY",
+        Size = UDim2.new(0.6, 0, 1, 0),
+        Position = UDim2.new(0, 12, 0, 0),
+        TextColor = THEME.TextWhite,  -- ขาวสดชัด
+        TextSize = 12,
+        Font = Enum.Font.GothamBold,  -- ตัวหนาขึ้น
+        TextXAlign = Enum.TextXAlignment.Left
+    })
+    
+    -- Info Label (Enhanced Visibility)
+    self.InfoLabel = self.UIFactory.CreateLabel({
+        Parent = StatusBarBg,
+        Text = "",
+        Size = UDim2.new(0.4, -12, 1, 0),
+        Position = UDim2.new(1, -12, 0, 0),
+        AnchorPoint = Vector2.new(1, 0),
+        TextColor = THEME.AccentBlue,  -- สีฟ้าสว่าง
+        TextSize = 11,
+        Font = Enum.Font.GothamBold,
+        TextXAlign = Enum.TextXAlignment.Right
+    })
+
+    self:SwitchTab("Players")
+    self:StartMonitoring()
+    self:SetupKeybind()
+end
+
+function GUI:CreateMiniIcon()
+    local CONFIG = self.Config.CONFIG
+    local THEME = self.Config.THEME
+    
+    self.MiniIcon = self.UIFactory.CreateButton({
+        Size = CONFIG.MINI_ICON_SIZE,
+        Position = UDim2.new(0, 20, 0.5, -27),
+        BgColor = THEME.MainBg,
+        Text = "T",
+        TextColor = THEME.AccentBlue,
+        Font = Enum.Font.GothamBlack,
+        TextSize = 26,
+        Parent = self.ScreenGui,
+        Corner = true,
+        CornerRadius = 8,
+        OnClick = function() self:ToggleWindow() end
+    })
+    self.MiniIcon.Visible = false
+    self.MiniIcon.Active = true
+    self.UIFactory.AddStroke(self.MiniIcon, THEME.AccentBlue, 2, 0)
+    self.UIFactory.MakeDraggable(self.MiniIcon, self.MiniIcon)
+end
+
+function GUI:CreateTitleBar()
+    local CONFIG = self.Config.CONFIG
+    local THEME = self.Config.THEME
+    
+    local titleBar = Instance.new("Frame", self.MainFrame)
+    titleBar.Name = "TitleBar"
+    titleBar.Size = UDim2.new(1, 0, 0, 38)
+    titleBar.BackgroundColor3 = THEME.GlassBg
+    titleBar.BackgroundTransparency = 0
+    titleBar.BorderSizePixel = 0
+    
+    self.UIFactory.AddCorner(titleBar, 8)
+    
+    -- Title with Professional Styling
+    local titleLabel = self.UIFactory.CreateLabel({
+        Parent = titleBar,
+        Text = "  UNIVERSAL TRADER",
+        Size = UDim2.new(0.5, 0, 1, 0),
+        TextColor = THEME.TextWhite,
+        TextSize = 13,
+        Font = Enum.Font.GothamBlack,
+        TextXAlign = Enum.TextXAlignment.Left
+    })
+    
+    -- Clean Version Badge
+    local versionBadge = Instance.new("Frame", titleBar)
+    versionBadge.Size = UDim2.new(0, 48, 0, 20)
+    versionBadge.Position = UDim2.new(0, 190, 0.5, -10)
+    versionBadge.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+    versionBadge.BackgroundTransparency = 0
+    versionBadge.BorderSizePixel = 0
+    self.UIFactory.AddCorner(versionBadge, 4)
+    
+    local versionText = self.UIFactory.CreateLabel({
+        Parent = versionBadge,
+        Text = "V" .. CONFIG.VERSION:match("(%d+%.%d+)"),
+        Size = UDim2.new(1, 0, 1, 0),
+        TextColor = THEME.TextWhite,
+        TextSize = 10,
+        Font = Enum.Font.GothamBold
+    })
+    
+    -- Modern Window Controls
+    self.UIFactory.CreateButton({
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -34, 0, 4),
+        Text = "×",
+        BgColor = Color3.fromRGB(255, 60, 60),
+        TextColor = THEME.TextWhite,
+        TextSize = 18,
+        Font = Enum.Font.GothamBold,
+        CornerRadius = 6,
+        Parent = titleBar,
+        OnClick = function() self.ScreenGui:Destroy() end
+    })
+    
+    self.UIFactory.CreateButton({
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -68, 0, 4),
+        Text = "—",
+        BgColor = THEME.BtnDefault,
+        TextColor = THEME.TextGray,
+        TextSize = 16,
+        Font = Enum.Font.GothamBold,
+        CornerRadius = 6,
+        Parent = titleBar,
+        OnClick = function() self:ToggleWindow() end
+    })
+    
+    self.UIFactory.MakeDraggable(titleBar, self.MainFrame)
+end
+
+function GUI:CreateSidebar()
+    local CONFIG = self.Config.CONFIG
+    local THEME = self.Config.THEME
+    
+    local sidebar = Instance.new("Frame", self.MainFrame)
+    sidebar.Name = "Sidebar"
+    sidebar.Size = UDim2.new(0, CONFIG.SIDEBAR_WIDTH, 1, -82)
+    sidebar.Position = UDim2.new(0, 8, 0, 42)
+    sidebar.BackgroundColor3 = THEME.GlassBg
+    sidebar.BackgroundTransparency = 0
+    sidebar.BorderSizePixel = 0
+    
+    self.UIFactory.AddCorner(sidebar, 8)
+    self.UIFactory.AddStroke(sidebar, THEME.GlassStroke, 1.5, 0)
+    
+    -- Simple Logo
+    local logoFrame = Instance.new("Frame", sidebar)
+    logoFrame.Size = UDim2.new(1, 0, 0, 50)
+    logoFrame.BackgroundTransparency = 1
+    
+    local logoText = self.UIFactory.CreateLabel({
+        Parent = logoFrame,
+        Text = "T",
+        Size = UDim2.new(1, 0, 1, 0),
+        TextColor = THEME.AccentBlue,
+        TextSize = 30,
+        Font = Enum.Font.GothamBlack
+    })
+    
+    -- Separator Line
+    local separator = Instance.new("Frame", sidebar)
+    separator.Size = UDim2.new(1, -16, 0, 1)
+    separator.Position = UDim2.new(0, 8, 0, 54)
+    separator.BackgroundColor3 = THEME.GlassStroke
+    separator.BackgroundTransparency = 0.3
+    separator.BorderSizePixel = 0
+    
+    -- Tab Buttons Container
+    local btnContainer = Instance.new("Frame", sidebar)
+    btnContainer.Size = UDim2.new(1, -12, 1, -68)
+    btnContainer.Position = UDim2.new(0, 6, 0, 62)
+    btnContainer.BackgroundTransparency = 1
+    
+    local layout = Instance.new("UIListLayout", btnContainer)
+    layout.Padding = UDim.new(0, 8)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    
+    self:CreateSidebarButton(btnContainer, "Players", "PLAYERS")
+    self:CreateSidebarButton(btnContainer, "Dupe", "DUPE")
+    self:CreateSidebarButton(btnContainer, "AutoCrates", "AUTO")
+end
+
+function GUI:CreateSidebarButton(parent, tabName, text)
+    local THEME = self.Config.THEME
+    
+    local btn = self.UIFactory.CreateButton({
+        Parent = parent,
+        Text = text,
+        Size = UDim2.new(1, 0, 0, 38),
+        BgColor = THEME.BtnMainTab,
+        TextColor = THEME.TextGray,
+        TextSize = 11,
+        Font = Enum.Font.GothamBold,
+        CornerRadius = 6,
+        OnClick = function()
+            self:SwitchTab(tabName)
+        end
+    })
+    
+    -- Add subtle border
+    self.UIFactory.AddStroke(btn, THEME.GlassStroke, 1, 0.7)
+    
+    self.SidebarButtons[tabName] = btn
+end
+
+function GUI:SwitchTab(tabName)
+    local THEME = self.Config.THEME
+    
+    if tabName == "Players" and self.Utils.IsTradeActive() then
+        tabName = "Inventory"
+        if self.StatusLabel then
+            self.StateManager:SetStatus("TRADE ACTIVE - REDIRECTED TO INVENTORY", THEME.Warning, self.StatusLabel)
+        end
+    end
+    
+    self.StateManager.currentMainTab = tabName
+    
+    for name, btn in pairs(self.SidebarButtons) do
+        local isSelected = (name == tabName)
+        local targetColor = isSelected and THEME.BtnMainTabSelected or THEME.BtnMainTab
+        local targetTextColor = isSelected and THEME.TextWhite or THEME.TextGray
         
-        -- [TICKETS]
-        {Name = "Void Ticket", Tier = 3, RequiredTiers = {4, 5, 6}, Service = "Tickets", Image = "85868652778541"},
-        {Name = "Summer Ticket", Tier = 4, RequiredTiers = {3, 5, 6}, Service = "Tickets", Image = "104675798190180"},
-        {Name = "Eternal Ticket", Tier = 5, RequiredTiers = {3, 4, 6}, Service = "Tickets", Image = "130196431947308"},
-        {Name = "Arcade Ticket", Tier = 6, RequiredTiers = {3, 4, 5}, Service = "Tickets", Image = "104884644514614"},
+        TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+            BackgroundColor3 = targetColor
+        }):Play()
+        TweenService:Create(btn, TweenInfo.new(0.2), {
+            TextColor3 = targetTextColor
+        }):Play()
+    end
+    
+    for _, child in pairs(self.ContentArea:GetChildren()) do
+        child:Destroy()
+    end
+    self.ActiveTabInstance = nil
+
+    if self.InfoLabel then 
+        self.InfoLabel.Text = "" 
+    end
+    
+    local success, err = pcall(function()
+        if tabName == "Players" and self.TabsModules.Players then
+            local tab = self.TabsModules.Players.new({
+                UIFactory = self.UIFactory,
+                StateManager = self.StateManager,
+                TradeManager = self.TradeManager,
+                Utils = self.Utils,
+                Config = self.Config,
+                StatusLabel = self.StatusLabel,
+                InfoLabel = self.InfoLabel
+            })
+            tab:Init(self.ContentArea)
+            self.ActiveTabInstance = tab
+            
+        elseif tabName == "Dupe" and self.TabsModules.Dupe then
+            local tab = self.TabsModules.Dupe.new({
+                UIFactory = self.UIFactory,
+                StateManager = self.StateManager,
+                InventoryManager = self.InventoryManager,
+                TradeManager = self.TradeManager,
+                Utils = self.Utils,
+                Config = self.Config,
+                StatusLabel = self.StatusLabel,
+                ScreenGui = self.ScreenGui,
+                InfoLabel = self.InfoLabel
+            })
+            tab:Init(self.ContentArea)
+            self.ActiveTabInstance = tab
         
-        -- [POTIONS]
-        {Name = "White Strawberry", Tier = 1, RequiredTiers = {2}, Service = "Strawberry", Image = "79066822879876"},
-        {Name = "Mega Luck Potion", Tier = 3, RequiredTiers = {1, 2}, Service = "Luck Potion", Image = "131175270021637"},
-        {Name = "Mega Wins Potion", Tier = 3, RequiredTiers = {1, 2}, Service = "Wins Potion", Image = "77652691143188"},
-        {Name = "Mega Exp Potion", Tier = 3, RequiredTiers = {1, 2}, Service = "Exp Potion", Image = "72861583354784"},
-    },
-    Crates = {},
-    Pets = {}
-}
+        elseif tabName == "AutoCrates" and self.TabsModules.AutoCrates then
+            local tab = self.TabsModules.AutoCrates.new({
+                UIFactory = self.UIFactory,
+                StateManager = self.StateManager,
+                InventoryManager = self.InventoryManager,
+                Utils = self.Utils,
+                Config = self.Config,
+                StatusLabel = self.StatusLabel,
+                InfoLabel = self.InfoLabel
+            })
+            tab:Init(self.ContentArea)
+            self.ActiveTabInstance = tab
+        
+        elseif tabName == "Inventory" and self.TabsModules.Inventory then
+            local tab = self.TabsModules.Inventory.new({
+                UIFactory = self.UIFactory,
+                StateManager = self.StateManager,
+                InventoryManager = self.InventoryManager,
+                TradeManager = self.TradeManager,
+                Utils = self.Utils,
+                Config = self.Config,
+                StatusLabel = self.StatusLabel
+            })
+            tab:Init(self.ContentArea)
+            self.ActiveTabInstance = tab    
+        end
+    end)
 
-local HIDDEN_LISTS = {
-    Accessories = {"Ghost", "Pumpkin Head", "Tri Tooth", "Tri Foot", "Tri Eyes", "Tri Ton"},
-    Pets = {"I.N.D.E.X", "Spooksy", "Spooplet", "Lordfang", "Batkin", "Flame", "Mega Flame", "Turbo Flame", "Ultra Flame", "I2Pet", "Present", "Polar Bear"},
-    Crates = { "Spooky Crate", "i2Perfect Crate" }
-}
+    if not success then
+        warn("Failed to load tab " .. tostring(tabName) .. ": " .. tostring(err))
+        self.StatusLabel.Text = "ERROR LOADING TAB: " .. tabName
+    end
+end
 
-return {
-    CONFIG = CONFIG,
-    THEME = THEME,
-    DUPE_RECIPES = DUPE_RECIPES,
-    HIDDEN_LISTS = HIDDEN_LISTS
-}
+function GUI:ToggleWindow()
+    if self.MainFrame.Visible then
+        self.MainFrame.Visible = false
+        self.MiniIcon.Visible = true
+    else
+        self.MainFrame.Visible = true
+        self.MiniIcon.Visible = false
+    end
+end
+
+function GUI:SetupKeybind()
+    local CONFIG = self.Config.CONFIG
+    
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if not gameProcessed and input.KeyCode == CONFIG.TOGGLE_KEY then
+            self:ToggleWindow()
+        end
+    end)
+end
+
+function GUI:StartMonitoring()
+    local CONFIG = self.Config.CONFIG
+    local THEME = self.Config.THEME
+    
+    task.spawn(function()
+        local missingCounter = 0
+        
+        while self.ScreenGui and self.ScreenGui.Parent do
+            if self.StateManager.currentMainTab == "Players" and self.ActiveTabInstance and self.ActiveTabInstance.UpdateButtonStates then
+                pcall(function() self.ActiveTabInstance:UpdateButtonStates() end)
+            end
+
+            if self.Utils.IsTradeActive() then
+                missingCounter = 0
+            else
+                missingCounter = missingCounter + 1
+            end
+            
+            if missingCounter > CONFIG.TRADE_RESET_THRESHOLD then
+                self.TradeManager.IsProcessing = false
+                
+                if next(self.StateManager.itemsInTrade) ~= nil or self.StateManager.currentMainTab == "Inventory" then
+                    
+                    local wasInInventory = (self.StateManager.currentMainTab == "Inventory")
+                    
+                    self.StateManager:ResetTrade()
+                    
+                    if self.StatusLabel then
+                        self.StateManager:SetStatus("TRADE CLOSED - RESET", THEME.TextGray, self.StatusLabel)
+                    end
+                    
+                    if self.StateManager.currentMainTab == "Dupe" and self.ActiveTabInstance and self.ActiveTabInstance.RefreshInventory then
+                        pcall(function() self.ActiveTabInstance:RefreshInventory() end)
+                    end
+
+                    if wasInInventory then
+                        task.wait(0.2)
+                        self:SwitchTab("Players")
+                    end
+                    
+                    missingCounter = 0
+                end
+            end
+            
+            task.wait(CONFIG.BUTTON_CHECK_INTERVAL)
+        end
+    end)
+    
+    Players.PlayerAdded:Connect(function()
+        if self.StateManager.currentMainTab == "Players" and self.ActiveTabInstance and self.ActiveTabInstance.RefreshList then
+            pcall(function() self.ActiveTabInstance:RefreshList() end)
+        end
+    end)
+    
+    Players.PlayerRemoving:Connect(function()
+        if self.StateManager.currentMainTab == "Players" and self.ActiveTabInstance and self.ActiveTabInstance.RefreshList then
+            pcall(function() self.ActiveTabInstance:RefreshList() end)
+        end
+    end)
+end
+
+return GUI
