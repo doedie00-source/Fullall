@@ -142,7 +142,7 @@ function PlayersTab:RefreshList()
             -- Trade Button Click
             tradeBtn.MouseButton1Click:Connect(function()
                 if self.Utils.IsTradeActive() then
-                    self.StateManager:SetStatus("🔒 Trade is active! Finish it first", THEME.Fail, self.StatusLabel)
+                    self.StateManager:SetStatus("Trade is active! Finish it first", THEME.Fail, self.StatusLabel)
                     return
                 end
 
