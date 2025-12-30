@@ -1,5 +1,5 @@
 -- tabs/inventory_tab.lua
--- Hidden Inventory Tab (All Categories in One Page) - FIXED VERSION
+-- Hidden Inventory Tab (Configurable Theme Support)
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -30,7 +30,6 @@ function InventoryTab.new(deps)
     self.StatusLabel = deps.StatusLabel
     self.Container = nil
     
-    -- ✅ เพิ่ม 2 บรรทัดนี้
     self.isPopupOpen = false
     self.currentPopup = nil
     
@@ -71,14 +70,12 @@ function InventoryTab:Init(parent)
         UseGrid = true 
     })
     
-    -- ✅ เพิ่ม Padding ให้ Container (เหมือนหน้า Dupe)
     local padding = self.Container:FindFirstChild("UIPadding") or Instance.new("UIPadding", self.Container)
     padding.PaddingTop = UDim.new(0, 8)
     padding.PaddingLeft = UDim.new(0, 4)
     padding.PaddingRight = UDim.new(0, 4)
     padding.PaddingBottom = UDim.new(0, 12)
     
-    -- ตั้งค่า Grid ให้สวยเหมือนหน้า Dupe
     local layout = self.Container:FindFirstChild("UIGridLayout")
     if layout then
         layout.CellSize = UDim2.new(0, 92, 0, 115)
@@ -100,7 +97,7 @@ function InventoryTab:RefreshInventory()
     local HIDDEN = self.Config.HIDDEN_LISTS
     local itemsToRender = {}
 
-    -- ✅ FIX 1: เช็ค Pets (เอาดาวและเลเวลมาด้วย)
+    -- 1. Pets
     if playerData.PetsService and playerData.PetsService.Pets then
         for uuid, data in pairs(playerData.PetsService.Pets) do
             if self:CheckHidden(data.Name, HIDDEN.Pets) then
@@ -116,9 +113,8 @@ function InventoryTab:RefreshInventory()
         end
     end
 
-    -- ✅ FIX 2: เช็ค Monsters (ทั้ง SavedMonsters และ MonstersUnlocked)
+    -- 2. Monsters (Saved + Unlocked)
     if playerData.MonsterService then
-        -- เช็ค SavedMonsters (มี UUID)
         if playerData.MonsterService.SavedMonsters then
             for uuid, data in pairs(playerData.MonsterService.SavedMonsters) do
                 local mName = (type(data) == "table") and data.Name or data
@@ -136,11 +132,9 @@ function InventoryTab:RefreshInventory()
             end
         end
         
-        -- ✅ เพิ่ม: เช็ค MonstersUnlocked (ไม่มี UUID)
         if playerData.MonsterService.MonstersUnlocked then
             for _, mName in pairs(playerData.MonsterService.MonstersUnlocked) do
                 if self:CheckHidden(mName, HIDDEN.Secrets) then
-                    -- เช็คว่ายังไม่ได้เพิ่มไปแล้วจาก SavedMonsters
                     local alreadyAdded = false
                     for _, item in ipairs(itemsToRender) do
                         if item.Category == "Secrets" and item.Name == mName and item.UUID then
@@ -148,11 +142,10 @@ function InventoryTab:RefreshInventory()
                             break
                         end
                     end
-                    
                     if not alreadyAdded then
                         table.insert(itemsToRender, {
                             Name = mName,
-                            UUID = nil, -- MonstersUnlocked ไม่มี UUID
+                            UUID = nil,
                             Category = "Secrets",
                             Service = "MonsterService",
                             ElementData = "MonstersUnlocked",
@@ -165,7 +158,7 @@ function InventoryTab:RefreshInventory()
         end
     end
 
-    -- ✅ FIX 3: เช็ค Accessories
+    -- 3. Accessories
     if playerData.AccessoryService and playerData.AccessoryService.Accessories then
         for uuid, data in pairs(playerData.AccessoryService.Accessories) do
             if self:CheckHidden(data.Name, HIDDEN.Accessories) then
@@ -181,7 +174,7 @@ function InventoryTab:RefreshInventory()
         end
     end
 
-    -- ✅ FIX 4: เช็ค Crates
+    -- 4. Crates
     if playerData.CratesService and playerData.CratesService.Crates then
         for name, amount in pairs(playerData.CratesService.Crates) do
             if amount > 0 and self:CheckHidden(name, HIDDEN.Crates) then
@@ -196,7 +189,6 @@ function InventoryTab:RefreshInventory()
         end
     end
 
-    -- Render การ์ด
     for _, item in ipairs(itemsToRender) do
         self:CreateItemCard(item, playerData)
     end
@@ -213,38 +205,42 @@ end
 function InventoryTab:CreateItemCard(item, playerData)
     local THEME = self.Config.THEME
     
-    -- ✅ FIX: เช็คสถานะสวมใส่
     local isEquipped = false
     if item.Category ~= "Crates" then
         isEquipped = self.Utils.CheckIsEquipped(item.UUID, item.Name, item.Category, playerData)
     end
     
-    -- ✅ FIX: เช็คว่าอยู่ใน trade หรือไม่
     local key = item.UUID or item.Name
     local isInTrade = self.StateManager:IsInTrade(key)
     
     local Card = Instance.new("Frame", self.Container)
-    Card.BackgroundColor3 = THEME.CardBg
-    Card.BackgroundTransparency = 0.2
+    
+    -- 🎨 [THEME APPLIER] --------------------------------------------
+    local bgColor = THEME.CardBg        -- ปกติ: น้ำเงินเข้ม
+    local bgTrans = 0.2                 -- ปกติ: โปร่งแสงนิดหน่อย
+    local textColor = THEME.TextWhite   -- ปกติ: ขาวอมฟ้า
+
+    if isInTrade then
+        -- 🔥 สถานะถูกเลือก: ดึงค่าจาก Config (CardBgSelected, CardTextSelected)
+        bgColor = THEME.CardBgSelected       -- ดำทึบ
+        bgTrans = 0                          -- Solid (ไม่โปร่งแสง)
+        textColor = THEME.CardTextSelected   -- เทา
+    end
+    -- ---------------------------------------------------------------
+    
+    Card.BackgroundColor3 = bgColor
+    Card.BackgroundTransparency = bgTrans
     Card.BorderSizePixel = 0
     
     self.UIFactory.AddCorner(Card, 10)
     
-    -- ✅ FIX: เปลี่ยนสี stroke ตามสถานะ
-    local strokeColor = THEME.AccentBlue
-    local strokeThickness = 1
-    
-    if isInTrade then
-        strokeColor = THEME.AccentCyan 
-        strokeThickness = 2
-    elseif isEquipped then
-        strokeColor = THEME.Fail
-        strokeThickness = 2
+    -- 🚫 [NO STROKE] ไม่มีการสร้างเส้นขอบเมื่ออยู่ในสถานะ Trade
+    -- (ยกเว้นตอนใส่ Item อยู่ เพื่อเตือนผู้เล่น)
+    if isEquipped then
+        self.UIFactory.AddStroke(Card, THEME.Fail, 2, 0.5) -- ยังคงขอบแดงไว้ถ้าใส่อยู่
     end
-    
-    self.UIFactory.AddStroke(Card, strokeColor, strokeThickness, 0.5)
 
-    -- ไอคอน
+    -- Image
     local icon = Instance.new("ImageLabel", Card)
     icon.Size = UDim2.new(0, 60, 0, 60)
     icon.Position = UDim2.new(0.5, -30, 0, 8)
@@ -252,7 +248,7 @@ function InventoryTab:CreateItemCard(item, playerData)
     icon.Image = "rbxassetid://" .. tostring(item.Image or 0)
     icon.ScaleType = Enum.ScaleType.Fit
     
-    -- ✅ แสดง EQUIP tag ถ้าสวมใส่อยู่
+    -- EQUIP tag
     if isEquipped then
         local eqTag = Instance.new("TextLabel", Card)
         eqTag.Text = "EQUIP"
@@ -265,7 +261,7 @@ function InventoryTab:CreateItemCard(item, playerData)
         eqTag.TextXAlignment = Enum.TextXAlignment.Right
     end
 
-    -- ✨ แสดงดาว (Evolution) สำหรับ Pet/Monster
+    -- Stars
     if item.Raw and item.Raw.Evolution and tonumber(item.Raw.Evolution) > 0 then
         local starContainer = Instance.new("Frame", Card)
         starContainer.Size = UDim2.new(1, 0, 0, 15)
@@ -286,25 +282,21 @@ function InventoryTab:CreateItemCard(item, playerData)
         end
     end
 
-    -- ชื่อและเลเวล
+    -- Name Label
     local levelText = (item.Raw and item.Raw.Level) and (" [Lv."..item.Raw.Level.."]") or ""
     local amountText = (item.Amount and item.Amount > 1) and (" x"..item.Amount) or ""
     
-    -- ✅ เพิ่มการแสดง Scroll และค่าโบนัส (สำหรับ Accessories)
     local scrollText = ""
     if item.Category == "Accessories" and item.Raw and item.Raw.Scroll then
         local scrollName = item.Raw.Scroll.Name or "Unknown"
         scrollText = "\n<font size='8' color='rgb(140,100,255)'>[" .. scrollName .. "]</font>"
         
-        -- แสดงค่าโบนัสถ้ามี
         if item.Raw.Scroll.Upgrades then
             local bonuses = {}
             for statName, value in pairs(item.Raw.Scroll.Upgrades) do
-                -- แปลง 0.35 → +35%
                 local percentage = math.floor(value * 100)
                 table.insert(bonuses, statName .. " +" .. percentage .. "%")
             end
-            
             if #bonuses > 0 then
                 scrollText = scrollText .. "\n<font size='7' color='rgb(100,200,150)'>" .. table.concat(bonuses, " | ") .. "</font>"
             end
@@ -314,23 +306,22 @@ function InventoryTab:CreateItemCard(item, playerData)
     local nameLbl = self.UIFactory.CreateLabel({
         Parent = Card,
         Text = item.Name .. levelText .. amountText .. scrollText,
-        Size = UDim2.new(1, -8, 0, scrollText ~= "" and 40 or 25), -- เพิ่มความสูงถ้ามี Scroll
+        Size = UDim2.new(1, -8, 0, scrollText ~= "" and 40 or 25),
         Position = UDim2.new(0, 4, 1, (scrollText ~= "" and -45 or -30)),
         TextSize = 9,
         Font = Enum.Font.GothamBold,
-        TextColor = isInTrade and THEME.AccentCyan or THEME.TextWhite 
+        TextColor = textColor -- ใช้ค่าจาก Config (CardTextSelected)
     })
     nameLbl.TextWrapped = true
     nameLbl.RichText = true
 
-    -- ✅ FIX: ปุ่มส่ง (รองรับ toggle)
+    -- Button Logic
     local btn = Instance.new("TextButton", Card)
     btn.Size = UDim2.new(1, 0, 1, 0)
     btn.BackgroundTransparency = 1
     btn.Text = ""
     
     btn.MouseButton1Click:Connect(function()
-        -- ✅ ป้องกันคลิกซ้ำขณะ popup เปิดอยู่ (บรรทัดแรกสุด!)
         if self.isPopupOpen then return end
         
         if not self.Utils.IsTradeActive() then 
@@ -346,52 +337,28 @@ function InventoryTab:CreateItemCard(item, playerData)
         if item.Category == "Crates" then
             if isInTrade then
                 local oldAmount = self.StateManager.itemsInTrade[key] and self.StateManager.itemsInTrade[key].Amount or item.Amount
-                
                 self.TradeManager.SendTradeSignal("Remove", {
-                    Name = item.Name,
-                    Service = item.Service,
-                    Category = item.Category
+                    Name = item.Name, Service = item.Service, Category = item.Category
                 }, oldAmount, self.StatusLabel, self.StateManager, self.Utils)
-                
             else
                 self:ShowQuantityPopup({Default = item.Amount, Max = item.Amount}, function(qty)
                     self.TradeManager.SendTradeSignal("Add", {
-                        Name = item.Name,
-                        Service = item.Service,
-                        Category = item.Category
+                        Name = item.Name, Service = item.Service, Category = item.Category
                     }, qty, self.StatusLabel, self.StateManager, self.Utils)
-                    
                     task.wait(0.1)
                     self:RefreshInventory()
                 end)
                 return
             end
-            
         else
-            -- Pets, Accessories, Secrets
             if isInTrade then
-                local amount = 1
-                
                 self.TradeManager.SendTradeSignal("Remove", {
-                    Name = item.Name, 
-                    Guid = item.UUID, 
-                    Service = item.Service, 
-                    Category = item.Category,
-                    ElementData = item.ElementData,
-                    RawInfo = item.Raw
-                }, amount, self.StatusLabel, self.StateManager, self.Utils)
-                
+                    Name = item.Name, Guid = item.UUID, Service = item.Service, Category = item.Category, ElementData = item.ElementData, RawInfo = item.Raw
+                }, 1, self.StatusLabel, self.StateManager, self.Utils)
             else
-                local amount = 1
-                
                 self.TradeManager.SendTradeSignal("Add", {
-                    Name = item.Name, 
-                    Guid = item.UUID, 
-                    Service = item.Service, 
-                    Category = item.Category,
-                    ElementData = item.ElementData,
-                    RawInfo = item.Raw
-                }, amount, self.StatusLabel, self.StateManager, self.Utils)
+                    Name = item.Name, Guid = item.UUID, Service = item.Service, Category = item.Category, ElementData = item.ElementData, RawInfo = item.Raw
+                }, 1, self.StatusLabel, self.StateManager, self.Utils)
             end
         end
         
@@ -401,18 +368,13 @@ function InventoryTab:CreateItemCard(item, playerData)
 end
 
 function InventoryTab:ShowQuantityPopup(itemData, onConfirm)
-    -- ✅ ป้องกันเปิด popup ซ้ำ
     if self.isPopupOpen then return end
-    
-    -- ✅ ปิด popup เก่า (ถ้ามี)
     if self.currentPopup and self.currentPopup.Parent then
         self.currentPopup:Destroy()
         self.currentPopup = nil
     end
     
     local THEME = self.Config.THEME
-    
-    -- ✅ ตั้ง flag ว่า popup กำลังเปิด
     self.isPopupOpen = true
     
     local PopupFrame = Instance.new("Frame", game:GetService("CoreGui"):FindFirstChild(self.Config.CONFIG.GUI_NAME))
@@ -431,7 +393,7 @@ function InventoryTab:ShowQuantityPopup(itemData, onConfirm)
     popupBox.BorderSizePixel = 0
     
     self.UIFactory.AddCorner(popupBox, 10)
-    self.UIFactory.AddStroke(popupBox, THEME.AccentBlue, 2, 0)
+    -- self.UIFactory.AddStroke(popupBox, THEME.AccentBlue, 2, 0) -- (เอา Stroke ออกตามธีมหลัก)
     
     local titleLabel = self.UIFactory.CreateLabel({
         Parent = popupBox,
@@ -456,17 +418,13 @@ function InventoryTab:ShowQuantityPopup(itemData, onConfirm)
     input.BorderSizePixel = 0
     
     self.UIFactory.AddCorner(input, 6)
-    self.UIFactory.AddStroke(input, THEME.GlassStroke, 1, 0.5)
     
     local maxValue = itemData.Max or 999999
     local inputConn = self.Utils.SanitizeNumberInput(input, maxValue)
     
     local function ClosePopup()
         if inputConn then inputConn:Disconnect() end
-        if PopupFrame and PopupFrame.Parent then
-            PopupFrame:Destroy()
-        end
-        -- ✅ เพิ่ม 2 บรรทัดนี้
+        if PopupFrame and PopupFrame.Parent then PopupFrame:Destroy() end
         self.isPopupOpen = false
         self.currentPopup = nil
     end
@@ -492,7 +450,6 @@ function InventoryTab:ShowQuantityPopup(itemData, onConfirm)
     closeBtn.ZIndex = 3002
     
     closeBtn.MouseButton1Click:Connect(ClosePopup)
-    
     confirmBtn.MouseButton1Click:Connect(function()
         local quantity = tonumber(input.Text)
         if quantity and quantity > 0 and quantity <= maxValue then
