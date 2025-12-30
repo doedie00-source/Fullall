@@ -1,5 +1,5 @@
 -- config.lua
--- Configuration & Constants (Dark Blue Professional Theme)
+-- Professional Cyber Blue Theme Configuration
 
 local CONFIG = {
     VERSION = "7.3",
@@ -25,63 +25,60 @@ local CONFIG = {
     TOGGLE_KEY = Enum.KeyCode.T,
 }
 
--- ⚡ Blue-White Professional Theme (Keep Red/Green for Status)
--- config.lua (Aggressive Midnight Edition)
-
+-- Professional Cyber Blue Theme (No Emojis)
 local THEME = {
-    -- Base: Deep Navy (พื้นหลังน้ำเงินมืด แบบโปรแกรม Python)
-    MainBg = Color3.fromRGB(10, 13, 20),            -- น้ำเงินมืดเกือบดำ (Dark Navy)
-    MainTransparency = 0,                           -- ทึบ 100%
-
-    PanelBg = Color3.fromRGB(15, 20, 30),           -- พื้นหลังรอง สว่างขึ้นนิดนึง
+    -- Base: Deep Navy (Dark Blue Background - Professional)
+    MainBg = Color3.fromRGB(10, 13, 20),            -- Deep Navy Blue (Almost Black)
+    MainTransparency = 0,                           -- Solid
+    PanelBg = Color3.fromRGB(15, 20, 30),           -- Secondary Background
     PanelTransparency = 0,
-
-    -- Glass/Containers (จุดสำคัญ! เส้นขอบสีฟ้าสว่าง)
-    GlassBg = Color3.fromRGB(20, 25, 40),           -- พื้นหลังกล่องข้อความ
-    GlassTransparency = 0,                          
-    GlassStroke = Color3.fromRGB(0, 100, 200),      -- **เส้นขอบสีน้ำเงินฟ้า (Electric Blue)** ตัดขอบชัดๆ แบบในรูป
-
-    -- Text (ขาวกับฟ้า)
-    TextWhite = Color3.fromRGB(240, 250, 255),      -- ขาวอมฟ้านิดๆ
-    TextGray = Color3.fromRGB(140, 160, 190),       -- เทาฟ้า
-    TextDim = Color3.fromRGB(80, 100, 130),         -- เทาเข้ม
-
-    -- Buttons (ปุ่มสไตล์ System)
-    BtnDefault = Color3.fromRGB(25, 35, 55),        -- ปุ่มพื้นน้ำเงินเข้ม
-    BtnHover = Color3.fromRGB(0, 80, 160),          -- ชี้แล้วเป็นสีฟ้าเข้ม
-    BtnSelected = Color3.fromRGB(0, 120, 220),      -- เลือกแล้วเป็นสีฟ้าสว่าง (Cyan Blue)
     
-    BtnMainTab = Color3.fromRGB(18, 22, 35),        -- แท็บด้านซ้าย
-    BtnMainTabSelected = Color3.fromRGB(0, 120, 220), -- แท็บที่เลือกสีฟ้าสว่าง
-
-    BtnDupe = Color3.fromRGB(0, 120, 220),          -- ปุ่มหลักสีฟ้าสว่าง
-    BtnDisabled = Color3.fromRGB(12, 15, 20),       -- ปุ่มปิด
+    -- Glass/Containers (Electric Blue Borders - Signature Look)
+    GlassBg = Color3.fromRGB(20, 25, 40),           -- Container Background
+    GlassTransparency = 0,                          
+    GlassStroke = Color3.fromRGB(0, 100, 200),      -- **Electric Blue Border** (Key Visual)
+    
+    -- Text (White and Blue)
+    TextWhite = Color3.fromRGB(240, 250, 255),      -- Pure White with Blue tint
+    TextGray = Color3.fromRGB(140, 160, 190),       -- Gray Blue
+    TextDim = Color3.fromRGB(80, 100, 130),         -- Dim Gray
+    
+    -- Buttons (System Style)
+    BtnDefault = Color3.fromRGB(25, 35, 55),        -- Default Button Dark Blue
+    BtnHover = Color3.fromRGB(0, 80, 160),          -- Hover Dark Cyan
+    BtnSelected = Color3.fromRGB(0, 120, 220),      -- Selected Bright Cyan
+    
+    BtnMainTab = Color3.fromRGB(18, 22, 35),        -- Sidebar Tab
+    BtnMainTabSelected = Color3.fromRGB(0, 120, 220), -- Selected Tab Bright Cyan
+    BtnDupe = Color3.fromRGB(0, 120, 220),          -- Primary Action Button
+    BtnDisabled = Color3.fromRGB(12, 15, 20),       -- Disabled State
     TextDisabled = Color3.fromRGB(60, 70, 90),
-
-    -- Status Colors (นีออนชัดๆ)
-    Success = Color3.fromRGB(0, 255, 180),          -- เขียวมิ้นต์ (Cyber Green)
-    Fail = Color3.fromRGB(255, 60, 60),             -- แดงสด
-    Warning = Color3.fromRGB(255, 200, 50),         -- เหลือง
-    Info = Color3.fromRGB(0, 180, 255),             -- ฟ้า
+    
+    -- Status Colors (Neon - High Visibility)
+    Success = Color3.fromRGB(0, 255, 180),          -- Cyber Green (Mint)
+    Fail = Color3.fromRGB(255, 60, 60),             -- Bright Red
+    Warning = Color3.fromRGB(255, 200, 50),         -- Yellow
+    Info = Color3.fromRGB(0, 180, 255),             -- Cyan Blue
     
     -- Item Status
-    ItemInv = Color3.fromRGB(0, 255, 180),
-    ItemEquip = Color3.fromRGB(255, 60, 60),
+    ItemInv = Color3.fromRGB(0, 255, 180),          -- Available (Green)
+    ItemEquip = Color3.fromRGB(255, 60, 60),        -- Equipped (Red)
     PlayerBtn = Color3.fromRGB(30, 40, 60),
     DupeReady = Color3.fromRGB(0, 255, 180),
-
-    -- Cards (การ์ดแบบ Cyber)
-    CardBg = Color3.fromRGB(20, 28, 45),            -- พื้นหลังการ์ดน้ำเงินเข้ม
-    CardStrokeSelected = Color3.fromRGB(0, 160, 255), -- ขอบฟ้าสว่างวาบ (Cyan Glow)
+    
+    -- Cards (Cyber Style)
+    CardBg = Color3.fromRGB(20, 28, 45),            -- Card Background Dark Blue
+    CardStrokeSelected = Color3.fromRGB(0, 160, 255), -- Cyan Glow Border
     CardStrokeLocked = Color3.fromRGB(200, 50, 50),
     CrateSelected = Color3.fromRGB(0, 160, 255),
-
+    
     -- Accent Colors
     StarColor = Color3.fromRGB(255, 215, 0),
     AccentPurple = Color3.fromRGB(140, 80, 255),
-    AccentBlue = Color3.fromRGB(0, 140, 255),       -- ฟ้าหลัก (Cyber Blue)
+    AccentBlue = Color3.fromRGB(0, 140, 255),       -- Primary Cyber Blue
     AccentGreen = Color3.fromRGB(0, 220, 140),
 }
+
 local DUPE_RECIPES = {
     Items = {
         -- [SCROLLS]
