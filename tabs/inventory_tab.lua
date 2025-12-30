@@ -232,7 +232,7 @@ function InventoryTab:CreateItemCard(item, playerData)
     
     -- ✅ เปลี่ยนใหม่: มีขอบก็ต่อเมื่อ select หรือ equipped เท่านั้น
     if isInTrade then
-        self.UIFactory.AddStroke(Card, THEME.AccentCyan, 2, 0.3)
+        self.UIFactory.AddStroke(Card, THEME.AccentBlue, 2, 0.3)
     elseif isEquipped then
         self.UIFactory.AddStroke(Card, THEME.Fail, 2, 0.3)
     end
@@ -309,11 +309,11 @@ function InventoryTab:CreateItemCard(item, playerData)
     local nameLbl = self.UIFactory.CreateLabel({
         Parent = Card,
         Text = item.Name .. levelText .. amountText .. scrollText,
-        Size = UDim2.new(1, -8, 0, scrollText ~= "" and 40 or 25), -- เพิ่มความสูงถ้ามี Scroll
+        Size = UDim2.new(1, -8, 0, scrollText ~= "" and 40 or 25), 
         Position = UDim2.new(0, 4, 1, (scrollText ~= "" and -45 or -30)),
         TextSize = 9,
         Font = Enum.Font.GothamBold,
-        TextColor = isInTrade and THEME.AccentCyan or THEME.TextWhite 
+        TextColor = THEME.TextWhite  -- ✅ ใช้สีขาวตลอด
     })
     nameLbl.TextWrapped = true
     nameLbl.RichText = true
