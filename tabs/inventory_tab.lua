@@ -46,7 +46,7 @@ function InventoryTab:Init(parent)
         Text = "💎 Hidden Treasures",
         Size = UDim2.new(1, -8, 0, 24),
         Position = UDim2.new(0, 8, 0, 0),
-        TextColor = THEME.AccentCyan,
+        TextColor = THEME.AccentGreen,
         TextSize = 15,
         Font = Enum.Font.GothamBold,
         TextXAlign = Enum.TextXAlignment.Left
@@ -231,7 +231,7 @@ function InventoryTab:CreateItemCard(item, playerData)
     self.UIFactory.AddCorner(Card, 10)
     
     -- ✅ FIX: เปลี่ยนสี stroke ตามสถานะ
-    local strokeColor = THEME.GlassStroke
+    local strokeColor = THEME.AccentCyan
     local strokeThickness = 1
     
     if isInTrade then
