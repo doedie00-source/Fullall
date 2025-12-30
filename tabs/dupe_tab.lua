@@ -350,21 +350,16 @@ function DupeTab:CreateItemCard(recipe, playerData)
     Card.BorderSizePixel = 0
     self.UIFactory.AddCorner(Card, 10)
     
-    local strokeColor = THEME.GlassStroke
     local statusText = ""
-    
+
     if isOwned then
-        strokeColor = THEME.Fail
         statusText = "<font color='#ff5555' size='9'>(OWNED)</font>"
+        self.UIFactory.AddStroke(Card, THEME.Fail, 2, 0.3)
     elseif isReady then
-        strokeColor = THEME.DupeReady
         statusText = "<font color='#00ffaa' size='10'>✓ READY</font>"
-    else
-        strokeColor = THEME.Warning
-        statusText = string.format("<font color='#ffcc33' size='9'>Missing: %d/%d</font>", foundCount, totalNeeded)
+        self.UIFactory.AddStroke(Card, THEME.DupeReady, 2, 0.3)
     end
-    
-    self.UIFactory.AddStroke(Card, strokeColor, 1.5, 0.4)
+
     
     local Image = Instance.new("ImageLabel", Card)
     Image.BackgroundTransparency = 1
@@ -502,13 +497,12 @@ function DupeTab:CreateCrateCard(crate, inventoryCrates)
     
     self.UIFactory.AddCorner(Card, 10)
     
-    local strokeColor = THEME.GlassStroke
     if isOwnedInSystem then
-        strokeColor = THEME.Fail
+        self.UIFactory.AddStroke(Card, THEME.Fail, 2, 0.3)
     elseif shouldHighlight then
-        strokeColor = THEME.CrateSelected
+        self.UIFactory.AddStroke(Card, THEME.CrateSelected, 2, 0.3)
     end
-    self.UIFactory.AddStroke(Card, strokeColor, 1.5, isOwnedInSystem and 0.3 or 0.5)
+
     
     local Image = Instance.new("ImageLabel", Card)
     Image.BackgroundTransparency = 1
