@@ -535,7 +535,7 @@ function DupeTab:CreateCrateCard(crate, inventoryCrates)
         NameLbl.Text = crate.DisplayName .. "\n<font color='#43B581'>[x" .. amt .. "]</font>"
         NameLbl.TextColor3 = THEME.CrateSelected
     elseif isOwnedInSystem then
-        NameLbl.Text = crate.DisplayName .. "\n<font color='#888888'>(OWNED)</font>"
+        NameLbl.Text = crate.DisplayName .. "\n<font color='#ff5555'>(OWNED)</font>"
         NameLbl.TextColor3 = Color3.fromRGB(120, 120, 120)
     else
         NameLbl.Text = crate.DisplayName
