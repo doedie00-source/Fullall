@@ -1,8 +1,8 @@
 -- state_manager.lua
--- State Manager
+-- State Manager (Professional - No Emoji)
 
 local StateManager = {
-    Config = nil, -- ตั้งค่าจาก main
+    Config = nil,
     currentMainTab = "Players",
     currentDupeTab = "Items",
     itemsInTrade = {},
@@ -20,27 +20,13 @@ function StateManager:SetStatus(text, color, statusLabel)
     
     if self.statusResetTask then task.cancel(self.statusResetTask) end
     
-    -- ✨ เพิ่ม Icon ตามสถานะ
-    local icon = "🟢"
-    if color == THEME.Success then
-        icon = "✅"
-    elseif color == THEME.Fail then
-        icon = "❌"
-    elseif color == THEME.Warning then
-        icon = "⚠️"
-    elseif color == THEME.AccentBlue or color == THEME.AccentPurple or color == THEME.BtnDupe then
-        icon = "🔄"
-    elseif color == THEME.PlayerBtn then
-        icon = "🚀"
-    end
-    
-    -- อัพเดทข้อความพร้อม icon
-    statusLabel.Text = icon .. " " .. text
+    -- Clean status text without emojis
+    statusLabel.Text = text
     statusLabel.TextColor3 = color or THEME.TextGray
     
-    -- Reset หลังจากผ่านไประยะเวลา
+    -- Reset after delay
     self.statusResetTask = task.delay(CONFIG.STATUS_RESET_DELAY, function()
-        statusLabel.Text = "🟢 Ready"
+        statusLabel.Text = "Ready"
         statusLabel.TextColor3 = THEME.TextGray
     end)
 end
