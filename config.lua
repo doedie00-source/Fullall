@@ -2,8 +2,8 @@
 -- Professional Cyber Blue Theme Configuration
 
 local CONFIG = {
-    VERSION = "7.3",
-    GUI_NAME = "ModernTradeGUI",
+    VERSION = "7.4",
+    GUI_NAME = "Trade",
     
     -- Window Settings
     MAIN_WINDOW_SIZE = UDim2.new(0, 750, 0, 480),
