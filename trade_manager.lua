@@ -1,5 +1,6 @@
 -- trade_manager.lua
 -- Trade Manager (CORE LOGIC - PRESERVED)
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
@@ -24,39 +25,18 @@ local TradeManager = {}
 TradeManager.IsProcessing = false 
 TradeManager.CratesInfo = CratesInfo
 TradeManager.PetsInfo = PetsInfo
-TradeManager.CurrentPartnerID = nil -- [NEW] เก็บไอดีคู่เทรดไว้ที่นี่
-
--- ========================================================
--- ✅ [NEW] SYSTEM HOOK: ดักจับไอดีอัตโนมัติ (ไม่ต้องใช้ DEBUG)
--- ========================================================
-function TradeManager.Init()
-    -- ดักฟังตอนเปิดหน้าต่างเทรด (ไม่ว่าจะเริ่มเองหรือเขาส่งมา)
-    local oldAccepted = TradeController.OnTradeRequestAccepted
-    TradeController.OnTradeRequestAccepted = function(self, partnerId)
-        TradeManager.CurrentPartnerID = tonumber(partnerId)
-        return oldAccepted(self, partnerId)
-    end
-
-    -- ดักฟังตอนมีคนส่งคำขอเทรดมา
-    local oldReceived = TradeController.OnTradeRequestRecieved
-    TradeController.OnTradeRequestRecieved = function(self, senderId)
-        TradeManager.CurrentPartnerID = tonumber(senderId)
-        return oldReceived(self, senderId)
-    end
-end
-TradeManager.Init() -- เริ่มการทำงานระบบดักจับไอดี
 
 function TradeManager.ForceTradeWith(targetPlayer, statusLabel, StateManager, Utils)
     if not targetPlayer then return end
     if TradeManager.IsProcessing or Utils.IsTradeActive() then return end
     
     TradeManager.IsProcessing = true
-    TradeManager.CurrentPartnerID = targetPlayer.UserId -- บันทึกไอดีเป้าหมายทันที
     
+    -- ใช้ค่าจาก StateManager's Config
     local THEME = StateManager.Config and StateManager.Config.THEME or {
         PlayerBtn = Color3.fromRGB(255, 170, 0),
         Success = Color3.fromRGB(85, 255, 127),
-        Fail = Color3.fromRGB(255, 80, 80)
+        ItemEquip = Color3.fromRGB(255, 80, 80)
     }
     
     StateManager:SetStatus("🚀 Requesting trade...", THEME.PlayerBtn, statusLabel)
@@ -69,24 +49,29 @@ function TradeManager.ForceTradeWith(targetPlayer, statusLabel, StateManager, Ut
                 TradeController:OnTradeRequestAccepted(targetPlayer.UserId) 
             end)
             
-            -- [REMOVED DEBUG SETUPVALUE] - ไม่จำเป็นต้องใช้แล้วเพราะเรา Hook ไอดีไว้ข้างบนแล้ว
+            if debug and debug.setupvalue then
+                pcall(function()
+                    local func = TradeController.AddToTradeData
+                    debug.setupvalue(func, 4, LocalPlayer.UserId)
+                end)
+            end
             
             StateManager:SetStatus("✅ Request sent!", THEME.Success, statusLabel)
         else
-            StateManager:SetStatus("❌ Failed (Cooldown/Busy).", THEME.Fail, statusLabel)
+            StateManager:SetStatus("❌ Failed (Cooldown/Busy).", THEME.ItemEquip, statusLabel)
         end
     end)
 end
 
 function TradeManager.SendTradeSignal(action, itemData, amount, statusLabel, StateManager, Utils, callbacks)
     local THEME = StateManager.Config and StateManager.Config.THEME or {
-        Fail = Color3.fromRGB(255, 80, 80),
+        ItemEquip = Color3.fromRGB(255, 80, 80),
         ItemInv = Color3.fromRGB(100, 255, 140),
         BtnDupe = Color3.fromRGB(170, 0, 255)
     }
     
     if not Utils.IsTradeActive() then
-        StateManager:SetStatus("⚠️ Trade Menu NOT open!", THEME.Fail, statusLabel)
+        StateManager:SetStatus("⚠️ Trade Menu NOT open!", THEME.ItemEquip, statusLabel)
         return
     end
     
@@ -105,7 +90,7 @@ function TradeManager.SendTradeSignal(action, itemData, amount, statusLabel, Sta
         btn:SetAttribute("Quantity", amount)
         btn:SetAttribute("IsEquipped", false)
         
-        -- ✅ รองรับ Crates
+        -- ✅ FIX: รองรับ Crates
         if itemData.Category == "Crates" then
             btn:SetAttribute("ItemName", itemData.Name)
             btn:SetAttribute("Name", itemData.Name)
@@ -114,22 +99,32 @@ function TradeManager.SendTradeSignal(action, itemData, amount, statusLabel, Sta
             btn:SetAttribute("IsFakeDupe", true)
         end
         
-        -- ✅ รองรับ Monster ที่ไม่มี UUID (MonstersUnlocked)
+        -- ✅ FIX: รองรับ Monster ที่ไม่มี UUID (MonstersUnlocked)
         if itemData.Category == "Secrets" then
             if itemData.ElementData then
                 btn:SetAttribute("ElementData", itemData.ElementData)
             end
+            
+            -- ถ้ามี Guid (SavedMonsters) ให้ใส่
             if itemData.Guid then
                 btn:SetAttribute("Guid", tostring(itemData.Guid))
             end
         elseif itemData.Guid and itemData.Category ~= "Crates" then
+            -- กรณีปกติ (Pets, Accessories)
             btn:SetAttribute("Guid", tostring(itemData.Guid))
         end
         
+        -- ใส่ข้อมูลเพิ่มเติม
         if itemData.RawInfo then
-            if itemData.RawInfo.Evolution then btn:SetAttribute("Evolution", itemData.RawInfo.Evolution) end
-            if itemData.RawInfo.Shiny then btn:SetAttribute("Shiny", true) end
-            if itemData.RawInfo.Golden then btn:SetAttribute("Golden", true) end
+            if itemData.RawInfo.Evolution then 
+                btn:SetAttribute("Evolution", itemData.RawInfo.Evolution) 
+            end
+            if itemData.RawInfo.Shiny then 
+                btn:SetAttribute("Shiny", true) 
+            end
+            if itemData.RawInfo.Golden then 
+                btn:SetAttribute("Golden", true) 
+            end
         end
         
         game:GetService("CollectionService"):AddTag(btn, "Tradeable")
@@ -138,7 +133,7 @@ function TradeManager.SendTradeSignal(action, itemData, amount, statusLabel, Sta
     end)
     
     if not success or not fakeBtn then
-        StateManager:SetStatus("❌ Failed to create signal!", THEME.Fail, statusLabel)
+        StateManager:SetStatus("❌ Failed to create signal!", THEME.ItemEquip, statusLabel)
         return
     end
     
@@ -147,7 +142,10 @@ function TradeManager.SendTradeSignal(action, itemData, amount, statusLabel, Sta
         
         if action == "Add" then
             TradeController:AddToTradeData(fakeBtn, amount)
+            
+            -- ✅ เพิ่มบรรทัดนี้: เก็บ Amount เข้าไปใน itemData
             itemData.Amount = amount
+            
             StateManager:AddToTrade(key, itemData)
             
             local modePrefix = isDupeMode and "✨ Dupe: " or "✅ Added: "
@@ -156,42 +154,36 @@ function TradeManager.SendTradeSignal(action, itemData, amount, statusLabel, Sta
         elseif action == "Remove" then
             TradeController:RemoveFromTradeData(fakeBtn, amount)
             StateManager:RemoveFromTrade(key)
-            StateManager:SetStatus("🗑️ Removed: " .. itemData.Name, THEME.Fail, statusLabel)
+            StateManager:SetStatus("🗑️ Removed: " .. itemData.Name, THEME.ItemEquip, statusLabel)
         end
     end)
     
     task.delay(0.5, function() 
-        if fakeBtn and fakeBtn.Parent then fakeBtn:Destroy() end 
+        if fakeBtn and fakeBtn.Parent then 
+            fakeBtn:Destroy() 
+        end 
     end)
     
-    if callbacks and callbacks.RefreshInventory then 
-        callbacks.RefreshInventory() 
+    if callbacks then
+        if callbacks.RefreshInventory then 
+            callbacks.RefreshInventory() 
+        end
     end
 end
 
 function TradeManager.GetGameTradeId()
-    -- [MODIFIED] กลับมาใช้ค่าที่เรา Hook ไว้ (TradeManager.CurrentPartnerID) 
-    -- ถ้าไม่มีจริงๆ ค่อยสแกนจาก UI
-    if TradeManager.CurrentPartnerID then
-        return TradeManager.CurrentPartnerID
-    end
-
     local success, tradeId = pcall(function()
-        local tradingFrame = LocalPlayer.PlayerGui.Windows:FindFirstChild("TradingFrame")
-        if tradingFrame and tradingFrame.Visible then
-            for _, p in pairs(Players:GetPlayers()) do
-                if p ~= LocalPlayer then
-                    local partnerLabel = tradingFrame:FindFirstChild("PartnerName", true) or tradingFrame:FindFirstChild("Username", true)
-                    if partnerLabel and (partnerLabel.Text:find(p.Name) or partnerLabel.Text:find(p.DisplayName)) then
-                        return p.UserId
-                    end
+        if debug and debug.getupvalues then
+            local upvalues = debug.getupvalues(TradeController.AddToTradeData)
+            for i, v in pairs(upvalues) do
+                if type(v) == "number" and v > 1000 then 
+                    return v 
                 end
             end
         end
     end)
     return (success and tradeId) or nil
 end
-
 
 function TradeManager.ExecuteMagicDupe(recipe, statusLabel, amount, StateManager, Utils, InventoryManager)
     local THEME = StateManager.Config and StateManager.Config.THEME or {
@@ -680,9 +672,6 @@ function TradeManager.ActionCancelTrade(statusLabel, StateManager, Utils)
 
         if success then
             StateManager:SetStatus("🗑️ Trade Cancelled!", THEME.Success, statusLabel)
-
-            TradeManager.CurrentPartnerID = nil 
-            
             StateManager:ResetTrade() -- ล้างข้อมูล Trade ใน UI
         else
             StateManager:SetStatus("❌ Cancel Failed!", THEME.Fail, statusLabel)
