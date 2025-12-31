@@ -43,8 +43,8 @@ function ScrollTab.new(deps)
     
     self.TargetSettings = {
         Damage = 40,
-        MaxHealth = 35,
-        Exp = 35
+        MaxHealth = 40,
+        Exp = 40
     }
     
     self.FORGE_DELAY = 0.5
