@@ -109,22 +109,7 @@ function DupeTab:Init(parent)
     -- ใส่ขอบสีแดง
     self.UIFactory.AddStroke(btnCancel, THEME.Fail, 1.5, 0.4)
 
-    -- ปุ่ม Confirm (สไตล์เดียวกับ Dupe Pet)
-    local btnConfirm = self.UIFactory.CreateButton({
-        Parent = ctrlContainer,
-        Text = "CONFIRM",
-        Size = UDim2.new(0, 80, 0, 28),
-        BgColor = THEME.CardBg,     -- พื้นหลังสีเข้ม
-        TextColor = THEME.TextWhite,
-        TextSize = 11,
-        Font = Enum.Font.GothamBold,
-        CornerRadius = 6,
-        OnClick = function()
-            self.TradeManager.ActionConfirmTrade(self.StatusLabel, self.StateManager, self.Utils)
-        end
-    })
 
-    self.UIFactory.AddStroke(btnConfirm, THEME.AccentBlue, 1.5, 0.4)
     -- ==========================================
 
     local tabsContainer = Instance.new("Frame", header)
