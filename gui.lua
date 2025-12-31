@@ -34,6 +34,7 @@ function GUI:Initialize()
     local CONFIG = self.Config.CONFIG
     local THEME = self.Config.THEME
     _G.ModernGUI = self
+    self.TradeManager.Init() 
 
     if CoreGui:FindFirstChild(CONFIG.GUI_NAME) then
         pcall(function() CoreGui[CONFIG.GUI_NAME]:Destroy() end)
@@ -407,6 +408,8 @@ function GUI:StartMonitoring()
             
             if missingCounter > CONFIG.TRADE_RESET_THRESHOLD then
                 self.TradeManager.IsProcessing = false
+
+                self.TradeManager.CurrentPartnerID = nil 
                 
                 if next(self.StateManager.itemsInTrade) ~= nil or self.StateManager.currentMainTab == "Inventory" then
                     
