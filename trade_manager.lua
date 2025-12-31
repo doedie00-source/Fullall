@@ -582,7 +582,6 @@ end
 
 function TradeManager.ActionConfirmTrade(statusLabel, StateManager, Utils)
     local THEME = StateManager.Config and StateManager.Config.THEME or {
-        BtnSelected = Color3.fromRGB(0, 140, 255),
         Success = Color3.fromRGB(85, 255, 127),
         Fail = Color3.fromRGB(255, 85, 85),
         Warning = Color3.fromRGB(255, 200, 0)
@@ -603,80 +602,33 @@ function TradeManager.ActionConfirmTrade(statusLabel, StateManager, Utils)
 
     TradeManager.IsProcessing = true
     
-    -- ดึง Service และ Events ที่จำเป็น
-    local TradingService = Knit.GetService("TradingService")
-    local RF = TradingService.RF:FindFirstChild("ToggleTradeAccept")
-    local RE = TradingService.RE -- RemoteEvent สำหรับฟังสัญญาณ
-
-    if not RF then
-        StateManager:SetStatus("❌ Remote not found!", THEME.Fail, statusLabel)
-        TradeManager.IsProcessing = false
-        return
-    end
-
-    -- ตัวแปรสำหรับเก็บ Connection เพื่อ Disconnect ทีหลัง
-    local readyConnection
-    local countdownConnection
-    local cleanup
-
-    -- ฟังก์ชันเคลียร์ Event เพื่อไม่ให้ค้าง
-    cleanup = function()
-        if readyConnection then readyConnection:Disconnect() end
-        if countdownConnection then countdownConnection:Disconnect() end
-        TradeManager.IsProcessing = false
-    end
-
-    -- [Step 1] ส่งค่า Ready (Lock Trade)
-    StateManager:SetStatus("🔒 Step 1: Ready... Waiting for partner", THEME.BtnSelected, statusLabel)
-    
-    local success1, err1 = pcall(function()
-        return RF:InvokeServer(targetId, true, false) -- true=Ready, false=Not Confirm yet
-    end)
-
-    if not success1 then
-        StateManager:SetStatus("❌ Step 1 Failed!", THEME.Fail, statusLabel)
-        cleanup()
-        return
-    end
-
-    -- [Step 2] รอฟังสัญญาณ BothPlayersReady
-    -- เมื่อทั้งคู่ Ready เซิร์ฟเวอร์จะยิง event นี้มา
-    readyConnection = RE.BothPlayersReady.OnClientEvent:Connect(function(backedOut, unconfirmed)
-        -- อ้างอิงจาก Decompiler: if not arg2 and not arg3 then ... (Both players have ready'd)
-        if not backedOut and not unconfirmed then
-            StateManager:SetStatus("⚡ Both Ready! Confirming...", THEME.Warning, statusLabel)
-            
-            -- หน่วงเวลานิดนึงให้เหมือนคนกด
-            task.wait(0.5)
-
-            -- ส่งค่า Confirm
-            local success2, err2 = pcall(function()
-                return RF:InvokeServer(targetId, true, true) -- true=Ready, true=Confirmed
-            end)
-            
-            if not success2 then
-                StateManager:SetStatus("❌ Confirm Failed!", THEME.Fail, statusLabel)
-                cleanup()
-            end
-        end
-    end)
-
-    -- [Step 3] รอฟังสัญญาณ StartTradeCountdown (จบงาน)
-    countdownConnection = RE.StartTradeCountdown.OnClientEvent:Connect(function(timestamp)
-        StateManager:SetStatus("✅ Countdown Started! (10s)", THEME.Success, statusLabel)
+    task.spawn(function()
+        local Remote = ReplicatedStorage.Packages.Knit.Services.TradingService.RF:FindFirstChild("ToggleTradeAccept")
         
-        -- เมื่อเริ่มนับถอยหลังแล้ว ถือว่าจบกระบวนการของเรา
-        cleanup()
-    end)
-
-    -- [Failsafe] ตั้งเวลา Time out ไว้ 30 วินาที ถ้าอีกฝ่ายไม่กด Ready สักทีให้หยุดรอ
-    task.delay(30, function()
-        if TradeManager.IsProcessing then
-            StateManager:SetStatus("⚠️ Timed out (Partner didn't ready)", THEME.Fail, statusLabel)
-            cleanup()
+        if not Remote then
+            StateManager:SetStatus("❌ Remote not found!", THEME.Fail, statusLabel)
+            TradeManager.IsProcessing = false
+            return
         end
+
+        StateManager:SetStatus("🚀 Instant Confirm...", THEME.Warning, statusLabel)
+
+        -- ยิงเปรี้ยงเดียวจบ (true, true)
+        local success, err = pcall(function()
+            return Remote:InvokeServer(targetId, true, true)
+        end)
+
+        if success then
+            StateManager:SetStatus("✅ Confirmed!", THEME.Success, statusLabel)
+        else
+            StateManager:SetStatus("❌ Failed: " .. tostring(err), THEME.Fail, statusLabel)
+        end
+        
+        task.wait(0.5)
+        TradeManager.IsProcessing = false
     end)
 end
+
 function TradeManager.ActionCancelTrade(statusLabel, StateManager, Utils)
     local THEME = StateManager.Config and StateManager.Config.THEME
     
@@ -729,8 +681,8 @@ function TradeManager.ActionCancelTrade(statusLabel, StateManager, Utils)
         end)
 
         if success then
-            StateManager:SetStatus("Trade Cancelled!", THEME.Success, statusLabel)
-            StateManager:ResetTrade()
+            StateManager:SetStatus("🗑️ Trade Cancelled!", THEME.Success, statusLabel)
+            StateManager:ResetTrade() -- ล้างข้อมูล Trade ใน UI ของเรา
         else
             -- ถึง Server จะ Fail แต่เราก็ปิดหน้าต่างไปแล้วเพื่อกันบัค
             StateManager:SetStatus("⚠️ Cancelled (Force Close)", THEME.Warning, statusLabel)
