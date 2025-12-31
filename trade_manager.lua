@@ -653,34 +653,58 @@ function TradeManager.ActionCancelTrade(statusLabel, StateManager, Utils)
     end
 
     local targetId = TradeManager.GetGameTradeId()
+    -- ถ้าหา ID ไม่เจอ ก็ให้พยายามปิด UI ไปเลย เพื่อกันค้าง
     if not targetId then
-        StateManager:SetStatus("❌ Target ID not found!", THEME.Fail, statusLabel)
-        return
+        -- StateManager:SetStatus("❌ Target ID not found!", THEME.Fail, statusLabel)
+        -- return
     end
 
     TradeManager.IsProcessing = true
     StateManager:SetStatus("⏳ Cancelling...", THEME.Fail, statusLabel)
 
     task.spawn(function()
+        -- 1. ยิง Remote ไปบอก Server ว่ายกเลิก (Logic เดิม)
         local success, err = pcall(function()
             local Remote = ReplicatedStorage.Packages.Knit.Services.TradingService.RF:FindFirstChild("CancelTrade")
-            if Remote then
+            if Remote and targetId then
                 return Remote:InvokeServer(targetId)
             end
             return false
         end)
 
+        -- 2. [เพิ่มใหม่] บังคับปิด UI ของเกม (Native UI) ทันที
+        pcall(function()
+            -- วิธีที่ 1: สั่งผ่าน WindowController (วิธีที่สะอาดที่สุดตามโค้ดเกม)
+            local WindowController = Knit.GetController("WindowController")
+            if WindowController then
+                WindowController:SetCurrentWindow(nil) -- สั่งให้ไม่มีหน้าต่างใดเปิดอยู่
+            end
+            
+            -- วิธีที่ 2: Force Hide Frame (เผื่อวิธีแรกไม่ได้ผล)
+            local TradingFrame = LocalPlayer.PlayerGui.Windows:FindFirstChild("TradingFrame")
+            if TradingFrame then
+                TradingFrame.Visible = false
+            end
+            
+            -- วิธีที่ 3: สั่ง CleanUp ตัว TradeController (เผื่อเคลียร์ข้อมูลค้าง)
+            local TC = Knit.GetController("TradeController")
+            if TC and TC.CleanUp then
+                TC:CleanUp()
+            end
+        end)
+
         if success then
             StateManager:SetStatus("🗑️ Trade Cancelled!", THEME.Success, statusLabel)
-            StateManager:ResetTrade() -- ล้างข้อมูล Trade ใน UI
+            StateManager:ResetTrade() -- ล้างข้อมูล Trade ใน UI ของเรา
         else
-            StateManager:SetStatus("❌ Cancel Failed!", THEME.Fail, statusLabel)
+            -- ถึง Server จะ Fail แต่เราก็ปิดหน้าต่างไปแล้วเพื่อกันบัค
+            StateManager:SetStatus("⚠️ Cancelled (Force Close)", THEME.Warning, statusLabel)
+            StateManager:ResetTrade()
         end
 
         task.wait(0.5)
         TradeManager.IsProcessing = false
     end)
 end
-
 
 return TradeManager
