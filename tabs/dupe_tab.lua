@@ -700,8 +700,7 @@ function DupeTab:RenderPetDupeGrid()
         ["Mega Flame"] = true,
         ["Turbo Flame"] = true,
         ["Ultra Flame"] = true,
-        ["I2Pet"] = true,
-        ["Dog"] = true
+        ["I2Pet"] = true
     }
     
     if not self.TooltipRef then
@@ -1094,7 +1093,7 @@ function DupeTab:UpdateEvoButtonState()
         elseif not allEvoZero then
             btnText = "❌ MUST BE EVO 0"
         else
-            btnText = "⚡ FAST MAX (9->1)"
+            btnText = "FASTEVO 2"
             isValid = true
         end
         
