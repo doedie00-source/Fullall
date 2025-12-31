@@ -68,7 +68,7 @@ function InventoryTab:Init(parent)
     })
 
     -- ==========================================
-    -- ✅ ปรับปรุงปุ่มขวาบน (สไตล์ CardBg + Stroke)
+    -- ปุ่มขวาบน
     -- ==========================================
     local ctrlContainer = Instance.new("Frame", header)
     ctrlContainer.Size = UDim2.new(0, 200, 0, 32)
@@ -105,11 +105,16 @@ function InventoryTab:Init(parent)
         UseGrid = true 
     })
     
+    -- [[ จุดที่แก้: เปิดระบบ Auto Resize ]]
+    self.Container.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    self.Container.CanvasSize = UDim2.new(0, 0, 0, 0)
+    self.Container.ScrollBarThickness = 4
+    
     local padding = self.Container:FindFirstChild("UIPadding") or Instance.new("UIPadding", self.Container)
     padding.PaddingTop = UDim.new(0, 8)
     padding.PaddingLeft = UDim.new(0, 4)
     padding.PaddingRight = UDim.new(0, 4)
-    padding.PaddingBottom = UDim.new(0, 12)
+    padding.PaddingBottom = UDim.new(0, 20) -- เพิ่ม Padding ล่างนิดหน่อยให้สวยงาม
     
     local layout = self.Container:FindFirstChild("UIGridLayout")
     if layout then

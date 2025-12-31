@@ -182,8 +182,9 @@ function AutoCratesTab:CreateFloatingButtons(parent)
         Parent = parent,
         OnClick = function() self:ToggleSelectAll() end
     })
-    self.SelectAllBtn.ZIndex = 101
+    self.SelectAllBtn.ZIndex = 1500 -- ✅ เพิ่ม ZIndex ให้สูงกว่า overlay (1001)
     self.SelectAllBtnStroke = self.UIFactory.AddStroke(self.SelectAllBtn, THEME.AccentBlue, 1.5, 0.4)
+    if self.SelectAllBtnStroke then self.SelectAllBtnStroke.ZIndex = 1500 end
     self.AutoOpenBtn = self.UIFactory.CreateButton({
         Size = UDim2.new(0, btnWidth + 10, 0, btnHeight),
         Position = UDim2.new(1, startX - btnWidth*2 - spacing - 10, 1, -38),
@@ -195,9 +196,10 @@ function AutoCratesTab:CreateFloatingButtons(parent)
         Parent = parent,
         OnClick = function() self:ToggleAutoOpen() end
     })
-    self.AutoOpenBtn.ZIndex = 101
+    self.AutoOpenBtn.ZIndex = 1500 -- ✅ เพิ่ม ZIndex ให้สูงกว่า overlay (1001)
 
     self.AutoOpenBtnStroke = self.UIFactory.AddStroke(self.AutoOpenBtn, THEME.AccentBlue, 1.5, 0.4)
+    if self.AutoOpenBtnStroke then self.AutoOpenBtnStroke.ZIndex = 1500 end
     
     -- 3. Auto Delete Button
     self.AutoDeleteBtn = self.UIFactory.CreateButton({
@@ -212,8 +214,9 @@ function AutoCratesTab:CreateFloatingButtons(parent)
         Parent = parent,
         OnClick = function() self:ToggleAutoDelete() end
     })
-    self.AutoDeleteBtn.ZIndex = 101
+    self.AutoDeleteBtn.ZIndex = 1500 -- ✅ เพิ่ม ZIndex ให้สูงกว่า overlay (1001)
     self.AutoDeleteBtnStroke = self.UIFactory.AddStroke(self.AutoDeleteBtn, THEME.AccentBlue, 1.5, 0.4)
+    if self.AutoDeleteBtnStroke then self.AutoDeleteBtnStroke.ZIndex = 1500 end
 end
 
 function AutoCratesTab:BuildTrashDatabase()
