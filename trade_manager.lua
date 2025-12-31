@@ -581,6 +581,8 @@ function TradeManager.ExecuteEvolution(statusLabel, callback, StateManager)
 end
 
 function TradeManager.ActionConfirmTrade(statusLabel, StateManager, Utils)
+    -- ปิดการทำงานไว้ก่อน
+    do return end 
     local THEME = StateManager.Config and StateManager.Config.THEME or {
         Success = Color3.fromRGB(85, 255, 127),
         Fail = Color3.fromRGB(255, 85, 85),
@@ -627,6 +629,7 @@ function TradeManager.ActionConfirmTrade(statusLabel, StateManager, Utils)
         task.wait(0.5)
         TradeManager.IsProcessing = false
     end)
+    -- ... (โค้ดที่เหลือจะถูกข้ามไป)
 end
 
 function TradeManager.ActionCancelTrade(statusLabel, StateManager, Utils)
