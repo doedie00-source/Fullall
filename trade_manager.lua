@@ -694,8 +694,8 @@ function TradeManager.ActionCancelTrade(statusLabel, StateManager, Utils)
         end)
 
         if success then
-            StateManager:SetStatus("🗑️ Trade Cancelled!", THEME.Success, statusLabel)
-            StateManager:ResetTrade() -- ล้างข้อมูล Trade ใน UI ของเรา
+            StateManager:SetStatus("Trade Cancelled!", THEME.Success, statusLabel)
+            StateManager:ResetTrade()
         else
             -- ถึง Server จะ Fail แต่เราก็ปิดหน้าต่างไปแล้วเพื่อกันบัค
             StateManager:SetStatus("⚠️ Cancelled (Force Close)", THEME.Warning, statusLabel)
