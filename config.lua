@@ -101,7 +101,7 @@ local DUPE_RECIPES = {
 local HIDDEN_LISTS = {
     Accessories = {"Ghost", "Pumpkin Head", "Tri Tooth", "Tri Foot", "Tri Eyes", "Tri Ton"},
     Pets = {"I.N.D.E.X", "Spooksy", "Spooplet", "Lordfang", "Batkin", "Flame", "Mega Flame", "Turbo Flame", "Ultra Flame", "I2Pet", "Present", "Polar Bear"},
-    Crates = { "Spooky Crate", "i2Perfect Crate" }
+    Crates = {"i2Perfect Crate" }
 }
 
 return {
