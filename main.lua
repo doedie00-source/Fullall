@@ -1,5 +1,5 @@
 -- main.lua (Modular Version - Updated with Scroll Tab)
-local BASE_URL = "http://192.168.1.102:8000/"
+local BASE_URL = "https://raw.githubusercontent.com/doedie00-source/Fullall/refs/heads/main/"
 
 local MODULES = {
     config = BASE_URL .. "config.lua",
