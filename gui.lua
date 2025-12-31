@@ -395,38 +395,45 @@ function GUI:StartMonitoring()
         local missingCounter = 0
         
         while self.ScreenGui and self.ScreenGui.Parent do
+            local isTradeActive = self.Utils.IsTradeActive() -- เช็คสถานะเทรด
+
+            -- ✅ ส่วนที่เพิ่ม: ถ้าเทรดเปิดอยู่ แต่ยังอยู่ที่หน้า Players ให้สลับไป Inventory ทันที
+            if isTradeActive and self.StateManager.currentMainTab == "Players" then
+                self:SwitchTab("Inventory")
+                if self.StatusLabel then
+                    self.StateManager:SetStatus("TRADE ACTIVE", THEME.Success, self.StatusLabel)
+                end
+            end
+
+            -- อัปเดตสถานะปุ่มในหน้า Players (Locked/Trade)
             if self.StateManager.currentMainTab == "Players" and self.ActiveTabInstance and self.ActiveTabInstance.UpdateButtonStates then
                 pcall(function() self.ActiveTabInstance:UpdateButtonStates() end)
             end
 
-            if self.Utils.IsTradeActive() then
+            -- Logic เดิมสำหรับนับเวลาปิดเทรด
+            if isTradeActive then
                 missingCounter = 0
             else
                 missingCounter = missingCounter + 1
             end
             
+            -- ระบบ Reset เมื่อปิดหน้าเทรด
             if missingCounter > CONFIG.TRADE_RESET_THRESHOLD then
                 self.TradeManager.IsProcessing = false
                 
                 if next(self.StateManager.itemsInTrade) ~= nil or self.StateManager.currentMainTab == "Inventory" then
-                    
                     local wasInInventory = (self.StateManager.currentMainTab == "Inventory")
-                    
                     self.StateManager:ResetTrade()
                     
                     if self.StatusLabel then
                         self.StateManager:SetStatus("TRADE CLOSED - RESET", THEME.TextGray, self.StatusLabel)
                     end
                     
-                    if self.StateManager.currentMainTab == "Dupe" and self.ActiveTabInstance and self.ActiveTabInstance.RefreshInventory then
-                        pcall(function() self.ActiveTabInstance:RefreshInventory() end)
-                    end
-
+                    -- ถ้าเคยอยู่ในหน้า Inventory ให้เด้งกลับไปหน้า Players
                     if wasInInventory then
                         task.wait(0.2)
                         self:SwitchTab("Players")
                     end
-                    
                     missingCounter = 0
                 end
             end
