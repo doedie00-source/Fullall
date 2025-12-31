@@ -97,22 +97,6 @@ function InventoryTab:Init(parent)
     })
     self.UIFactory.AddStroke(btnCancel, THEME.Fail, 1.5, 0.4)
 
-    -- ปุ่ม Confirm
-    local btnConfirm = self.UIFactory.CreateButton({
-        Parent = ctrlContainer,
-        Text = "CONFIRM",
-        Size = UDim2.new(0, 80, 0, 28),
-        BgColor = THEME.CardBg,
-        TextColor = THEME.TextWhite,
-        TextSize = 11,
-        Font = Enum.Font.GothamBold,
-        CornerRadius = 6,
-        OnClick = function()
-            self.TradeManager.ActionConfirmTrade(self.StatusLabel, self.StateManager, self.Utils)
-        end
-    })
-    self.UIFactory.AddStroke(btnConfirm, THEME.AccentBlue, 1.5, 0.4)
-    -- ==========================================
 
     self.Container = self.UIFactory.CreateScrollingFrame({
         Parent = parent,
