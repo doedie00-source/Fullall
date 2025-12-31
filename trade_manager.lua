@@ -680,6 +680,9 @@ function TradeManager.ActionCancelTrade(statusLabel, StateManager, Utils)
 
         if success then
             StateManager:SetStatus("🗑️ Trade Cancelled!", THEME.Success, statusLabel)
+
+            TradeManager.CurrentPartnerID = nil 
+            
             StateManager:ResetTrade() -- ล้างข้อมูล Trade ใน UI
         else
             StateManager:SetStatus("❌ Cancel Failed!", THEME.Fail, statusLabel)
