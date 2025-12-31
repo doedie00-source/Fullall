@@ -207,20 +207,6 @@ function PlayersTab:RefreshList()
 
                 self.TradeManager.ForceTradeWith(plr, self.StatusLabel, self.StateManager, self.Utils)
                 
-                -- Auto switch to Inventory tab
-                task.spawn(function()
-                    local timer = 0
-                    while timer < 10 do
-                        if self.Utils.IsTradeActive() then
-                            if _G.ModernGUI then 
-                                _G.ModernGUI:SwitchTab("Inventory")
-                            end
-                            break
-                        end
-                        timer = timer + 1
-                        task.wait(0.5)
-                    end
-                end)
             end)
             
             count = count + 1
