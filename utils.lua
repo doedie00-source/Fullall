@@ -19,9 +19,16 @@ end
 
 function Utils.CheckIsEquipped(guid, name, category, allData)
     if category == "Secrets" then
-        return (allData.MonsterService.EquippedMonster == name)
+        if guid then
+            return false
+        else
+            local equippedName = allData.MonsterService.EquippedMonster
+            return (equippedName == name)
+        end
     end
+    
     if not guid then return false end
+    
     if category == "Pets" then
         for _, eqGuid in pairs(allData.PetsService.EquippedPets or {}) do
             if eqGuid == guid then return true end
@@ -33,6 +40,7 @@ function Utils.CheckIsEquipped(guid, name, category, allData)
     end
     return false
 end
+
 
 function Utils.GetItemDetails(info, category)
     if type(info) ~= "table" then return "" end
