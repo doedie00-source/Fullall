@@ -101,7 +101,26 @@ local DUPE_RECIPES = {
 local HIDDEN_LISTS = {
     Accessories = {"Ghost", "Pumpkin Head", "Tri Tooth", "Tri Foot", "Tri Eyes", "Tri Ton"},
     Pets = {"I.N.D.E.X", "Spooksy", "Spooplet", "Lordfang", "Batkin", "Flame", "Mega Flame", "Turbo Flame", "Ultra Flame", "I2Pet", "Present", "Polar Bear"},
-    Crates = {"i2Perfect Crate" }
+    Crates = {"i2Perfect Crate" },
+    Secrets = {
+        "Banananananananito Bandito", 
+        "Tung Tung Tung Tung Tung Tung Tung..", 
+        "Los Tralaleritos", 
+        "Los Karkerkirkursitos", 
+        "OMEGA Sahur", 
+        "Anpali Babel", 
+        "Skull Skull Skull Sahur", 
+        "Prestige Skull Skull Skull Sahur", 
+        "Shimpanzini Bananini Priestini", 
+        "Frappochino Assassino", 
+        "Prestige Frappochino Assassino", 
+        "I2PERFECTINI FOXININI", 
+        "67", 
+        "Ban Ban Ban Sahur", 
+        "Prestige Ban Ban Sahur", 
+        "Santanzelli Trulala", 
+        "Prestige Snow Snow Sahur"
+    }
 }
 
 return {
