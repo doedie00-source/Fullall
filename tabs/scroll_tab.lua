@@ -43,8 +43,8 @@ function ScrollTab.new(deps)
     
     self.TargetSettings = {
         Damage = 40,
-        MaxHealth = 40,
-        Exp = 40
+        MaxHealth = 35,
+        Exp = 35
     }
     
     self.FORGE_DELAY = 0.5
@@ -386,6 +386,7 @@ function ScrollTab:ProcessForging(itemsToForge, replica)
         
         local attempts = 0
         while self.IsForging and not self:IsItemReachedTarget(info) do
+            if self.ShouldStop or not self.IsForging then break end
             local inv = replica.Data.ItemsService.Inventory
             local currentScrolls = (inv.Scrolls and inv.Scrolls["5"]) or 0
             
@@ -404,8 +405,8 @@ function ScrollTab:ProcessForging(itemsToForge, replica)
             
             if self.LockLabel then
                 self.LockLabel.Text = string.format(
-                    "[FORGING] %s\n\nItem: %d / %d\nTotal: %d\nAttempts: %d",
-                    info.Name, i, #itemsToForge, totalForged, attempts
+                    "[FORGING] %s\n\nItem: %d / %d\nThis Item: %d\nTotal Used: %d",
+                    info.Name, i, #itemsToForge, attempts, totalForged
                 )
             end
             
@@ -447,16 +448,27 @@ function ScrollTab:ProcessForging(itemsToForge, replica)
         )
     end
     
+    self.CurrentForgingItem = nil  -- ✅ เคลียร์ item ปัจจุบัน
+    self.NeedsUpdate = true  -- ✅ Refresh UI ก่อน reset button
+    task.wait(0.3)  -- ให้เวลา UI refresh
     self:ResetButton()
-    task.wait(1)
+    task.wait(0.7)
     self:RefreshAccessoryList()
 end
 
 function ScrollTab:StopForge()
     self.ShouldStop = true
     self.IsForging = false
+    self.CurrentForgingItem = nil  -- ✅ Reset item ที่กำลัง forge
     self.StartBtn.Text = "STOPPING..."
     self.StartBtnStroke.Color = self.Config.THEME.Fail
+    self.NeedsUpdate = true  -- ✅ Refresh UI ทันที
+    
+    -- ✅ แสดงสถานะ STOPPING ใน LockLabel
+    if self.LockLabel then
+        self.LockLabel.Text = "[STOPPING]\n\nPlease wait..."
+        self.LockLabel.TextColor3 = self.Config.THEME.Warning
+    end
 end
 
 function ScrollTab:ResetButton()
@@ -465,6 +477,7 @@ function ScrollTab:ResetButton()
     self.IsForging = false
     self.ShouldStop = false
     
+    self.CurrentForgingItem = nil     
     self.StartBtn.Text = "START FORGE"
     self.StartBtn.TextColor3 = THEME.TextWhite
     self.StartBtnStroke.Color = THEME.AccentBlue
@@ -473,7 +486,12 @@ function ScrollTab:ResetButton()
         self.LockOverlay.Visible = false
     end
     
+    if self.LockLabel then
+        self.LockLabel.TextColor3 = THEME.TextWhite
+    end
+
     self.SelectAllBtn.TextTransparency = 0
+    self.NeedsUpdate = true
     self:UpdateSelectButton()
 end
 
@@ -552,16 +570,17 @@ function ScrollTab:CreateAccessoryCard(guid, info, baseData)
     end
     
     local Card = Instance.new("Frame", self.AccessoryList)
-    Card.BackgroundColor3 = isCurrentForging and Color3.fromRGB(30, 30, 50) or THEME.CardBg
-    Card.BackgroundTransparency = 0.2
+    -- ✅ สีม่วงสด + ไม่โปร่งใส
+    Card.BackgroundColor3 = isCurrentForging and Color3.fromRGB(45, 25, 70) or THEME.CardBg
+    Card.BackgroundTransparency = isCurrentForging and 0 or 0.2
     Card.BorderSizePixel = 0
     Card.Size = UDim2.new(0, 92, 0, 115)
     
     self.UIFactory.AddCorner(Card, 10)
     
-    -- Stroke: เลือกแล้ว = สีฟ้า, กำลัง forge = สีม่วง, ปกติ = เทา
+    -- ✅ Stroke สีม่วงสด หนา ไม่โปร่งใส
     if isCurrentForging then
-        self.UIFactory.AddStroke(Card, Color3.fromRGB(180, 120, 255), 2, 0.3)
+        self.UIFactory.AddStroke(Card, Color3.fromRGB(200, 100, 255), 2.5, 0)
     elseif isSelected then
         self.UIFactory.AddStroke(Card, THEME.AccentBlue, 2, 0.3)
     else
@@ -575,6 +594,29 @@ function ScrollTab:CreateAccessoryCard(guid, info, baseData)
     icon.BackgroundTransparency = 1
     icon.Image = "rbxassetid://" .. tostring(baseData.Image or 0)
     icon.ScaleType = Enum.ScaleType.Fit
+    
+    -- ✅ เพิ่ม Badge "FORGING"
+    if isCurrentForging then
+        local forgingBadge = Instance.new("Frame", Card)
+        forgingBadge.Size = UDim2.new(0, 70, 0, 16)
+        forgingBadge.Position = UDim2.new(0.5, -35, 0, 2)
+        forgingBadge.BackgroundColor3 = Color3.fromRGB(200, 100, 255)
+        forgingBadge.BackgroundTransparency = 0
+        forgingBadge.BorderSizePixel = 0
+        forgingBadge.ZIndex = 10
+        
+        self.UIFactory.AddCorner(forgingBadge, 4)
+        
+        local badgeLabel = self.UIFactory.CreateLabel({
+            Parent = forgingBadge,
+            Text = "⚡ FORGING",
+            Size = UDim2.new(1, 0, 1, 0),
+            TextColor = Color3.fromRGB(255, 255, 255),
+            TextSize = 8,
+            Font = Enum.Font.GothamBlack
+        })
+        badgeLabel.ZIndex = 11
+    end
     
     -- แสดงดาว Evolution
     if info.Evolution and tonumber(info.Evolution) > 0 then
