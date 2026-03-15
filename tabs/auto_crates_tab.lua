@@ -18,7 +18,7 @@ AutoCratesTab.__index = AutoCratesTab
 
 -- Auto Delete Configuration
 local AUTO_DELETE_CONFIG = {
-    MAX_ACCESSORIES = 200,
+    MAX_ACCESSORIES = 100,
     SAFE_THRESHOLD = 16,
     BATCH_SIZE = 8,
     EXCEPTION_LIST = {
